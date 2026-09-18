@@ -117,6 +117,17 @@ class FinderSync: FIFinderSync {
         return submenuItem
     }
 
+    /// Builds the menu item that opens the default terminal. Used by the
+    /// default menu and by the custom menu when pinning is enabled.
+    func makeDefaultTerminalItem() -> NSMenuItem? {
+        guard let terminal = DefaultsManager.shared.defaultTerminal else { return nil }
+        let openInTerminalItem = NSMenuItem(title: terminal.name,
+                                            action: #selector(openDefaultTerminal),
+                                            keyEquivalent: "")
+        openInTerminalItem.image = DefaultsManager.shared.getAppIcon(terminal)
+        return openInTerminalItem
+    }
+
     func createDefaultMenu(useSubmenu: Bool) -> NSMenu {
         let menu = NSMenu(title: "")
 
@@ -124,14 +135,12 @@ class FinderSync: FIFinderSync {
         // menu that will be attached under a single top level item
         let itemsMenu = useSubmenu ? NSMenu(title: "") : menu
 
-        guard let terminal = DefaultsManager.shared.defaultTerminal else { return menu }
-        let terminalTitle = terminal.name
-        let openInTerminalItem = NSMenuItem(title: terminalTitle,
-                                            action: #selector(openDefaultTerminal),
-                                            keyEquivalent: "")
-        let terminalIcon = DefaultsManager.shared.getAppIcon(terminal)
-        openInTerminalItem.image = terminalIcon
-        itemsMenu.addItem(openInTerminalItem)
+        // when pinning is enabled, the default terminal stays at the top
+        // level instead of being grouped into the submenu
+        let pinDefault = DefaultsManager.shared.isContextMenuPinDefaultTerminal
+
+        guard let openInTerminalItem = makeDefaultTerminalItem() else { return menu }
+        (pinDefault ? menu : itemsMenu).addItem(openInTerminalItem)
 
         guard let editor = DefaultsManager.shared.defaultEditor else { return menu }
         let editorTitle = editor.name
@@ -147,6 +156,9 @@ class FinderSync: FIFinderSync {
 
         // attach the items menu under a single top level item when needed
         if useSubmenu {
+            if pinDefault {
+                menu.addItem(.separator())
+            }
             menu.addItem(makeSubmenuItem(with: itemsMenu))
         }
 
@@ -164,6 +176,14 @@ class FinderSync: FIFinderSync {
         // when submenu grouping is enabled, add the items into a separate
         // menu that will be attached under a single top level item
         let itemsMenu = useSubmenu ? NSMenu(title: "") : menu
+
+        // when pinning is enabled, the default terminal is shown as the
+        // first top-level item, above the custom apps or their submenu
+        if DefaultsManager.shared.isContextMenuPinDefaultTerminal,
+           let terminalItem = makeDefaultTerminalItem() {
+            menu.addItem(terminalItem)
+            menu.addItem(.separator())
+        }
 
         customApps.forEach { app in
             let itemTitle = app.name

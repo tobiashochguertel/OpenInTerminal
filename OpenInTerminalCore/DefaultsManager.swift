@@ -86,6 +86,19 @@ public class DefaultsManager {
         }
     }
 
+    /// Whether the default terminal item stays at the top level of the Finder
+    /// context menu instead of being grouped into the submenu or mixed into
+    /// the custom app list.
+    public var isContextMenuPinDefaultTerminal: Bool {
+        get {
+            return Defaults[.contextMenuPinDefaultTerminal]
+        }
+
+        set {
+            Defaults[.contextMenuPinDefaultTerminal] = newValue
+        }
+    }
+
     public var shouldOnlyActivateShortcutsInFinder: Bool {
         get {
             return Defaults[.onlyActivateShortcutsInFinder]
@@ -366,6 +379,7 @@ public class DefaultsManager {
         isHideStatusItem = false
         isHideContextMenuItems = false
         isContextMenuUseSubmenu = false
+        isContextMenuPinDefaultTerminal = false
         defaultTerminal = SupportedApps.terminal.app
         defaultEditor = SupportedApps.textEdit.app
         setNewOption(.terminal, .window)
