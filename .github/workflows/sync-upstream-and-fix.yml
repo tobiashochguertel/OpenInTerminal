@@ -35,6 +35,7 @@ env:
     OpenInTerminalCore/DefaultsManager.swift
     OpenInTerminalFinderExtension/FinderSync.swift
     build-unsigned.sh
+    build-signed.sh
 
 jobs:
   # ── Stable: sync main from latest upstream release tag ────────────────────
