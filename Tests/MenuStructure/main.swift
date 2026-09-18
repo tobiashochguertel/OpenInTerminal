@@ -33,7 +33,7 @@ func titles(_ menu: NSMenu) -> [String] {
 // We remove the domain afterwards so the file is not left behind.
 
 // Constants.Id.Group is internal to OpenInTerminalCore; use the literal.
-let suiteName = "group.wang.jianing.app.OpenInTerminal"
+let suiteName = "4ANN77GFL4.wang.jianing.app.OpenInTerminal"
 let suite = UserDefaults(suiteName: suiteName)!
 
 func injectDefaults(

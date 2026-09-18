@@ -1,0 +1,39 @@
+diff --git c/OpenInTerminal/OpenInTerminal.entitlements w/OpenInTerminal/OpenInTerminal.entitlements
+index b2e48cd..50e3cd7 100644
+--- c/OpenInTerminal/OpenInTerminal.entitlements
++++ w/OpenInTerminal/OpenInTerminal.entitlements
+@@ -4,7 +4,7 @@
+ <dict>
+ 	<key>com.apple.security.application-groups</key>
+ 	<array>
+-		<string>group.wang.jianing.app.OpenInTerminal</string>
++		<string>4ANN77GFL4.wang.jianing.app.OpenInTerminal</string>
+ 	</array>
+ 	<key>com.apple.security.automation.apple-events</key>
+ 	<true/>
+diff --git c/OpenInTerminalCore/Constants.swift w/OpenInTerminalCore/Constants.swift
+index 6651773..c04009b 100644
+--- c/OpenInTerminalCore/Constants.swift
++++ w/OpenInTerminalCore/Constants.swift
+@@ -12,7 +12,7 @@ struct Constants {
+     
+     /// Identifier
+     struct Id {
+-        static let Group = "group.wang.jianing.app.OpenInTerminal"
++        static let Group = "4ANN77GFL4.wang.jianing.app.OpenInTerminal"
+         static let OpenInTerminalLite = "wang.jianing.app.OpenInTerminal-Lite"
+         static let OpenInEditorLite = "wang.jianing.app.OpenInEditor-Lite"
+         static let Finder = "com.apple.Finder"
+diff --git c/OpenInTerminalFinderExtension/OpenInTerminalFinderExtension.entitlements w/OpenInTerminalFinderExtension/OpenInTerminalFinderExtension.entitlements
+index 2561d91..fd1c3f4 100644
+--- c/OpenInTerminalFinderExtension/OpenInTerminalFinderExtension.entitlements
++++ w/OpenInTerminalFinderExtension/OpenInTerminalFinderExtension.entitlements
+@@ -6,7 +6,7 @@
+ 	<true/>
+ 	<key>com.apple.security.application-groups</key>
+ 	<array>
+-		<string>group.wang.jianing.app.OpenInTerminal</string>
++		<string>4ANN77GFL4.wang.jianing.app.OpenInTerminal</string>
+ 	</array>
+ 	<key>com.apple.security.automation.apple-events</key>
+ 	<true/>

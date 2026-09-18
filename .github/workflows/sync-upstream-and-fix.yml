@@ -31,8 +31,11 @@ on:
 # upstream changes clean.
 env:
   PATCHED_FILES: |
+    OpenInTerminalCore/Constants.swift
     OpenInTerminalCore/Defaults.swift
     OpenInTerminalCore/DefaultsManager.swift
+    OpenInTerminal/OpenInTerminal.entitlements
+    OpenInTerminalFinderExtension/OpenInTerminalFinderExtension.entitlements
     OpenInTerminalFinderExtension/FinderSync.swift
     OpenInTerminal.xcodeproj/project.pbxproj
     build-unsigned.sh

@@ -19,7 +19,7 @@ cd "$(dirname "$0")/.."
 APP="/Applications/OpenInTerminal.app"
 APPEX="$APP/Contents/PlugIns/OpenInTerminalFinderExtension.appex"
 EXT_ID="wang.jianing.app.OpenInTerminal.OpenInTerminalFinderExtension"
-GROUP="group.wang.jianing.app.OpenInTerminal"
+GROUP="4ANN77GFL4.wang.jianing.app.OpenInTerminal"
 GROUP_PLIST="$HOME/Library/Group Containers/$GROUP/Library/Preferences/$GROUP.plist"
 OUT="Tests/.build"
 mkdir -p "$OUT"
@@ -89,7 +89,7 @@ PLIST
 <plist version="1.0"><dict>
 	<key>com.apple.security.app-sandbox</key><true/>
 	<key>com.apple.security.application-groups</key>
-	<array><string>group.wang.jianing.app.OpenInTerminal</string></array>
+	<array><string>4ANN77GFL4.wang.jianing.app.OpenInTerminal</string></array>
 </dict></plist>
 PLIST
     swiftc -O -o "$PROBE/Contents/MacOS/probe" Tests/SandboxedPrefsProbe/probe.swift

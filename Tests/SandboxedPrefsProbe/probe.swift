@@ -11,7 +11,7 @@
 
 import Foundation
 
-let group = "group.wang.jianing.app.OpenInTerminal"
+let group = "4ANN77GFL4.wang.jianing.app.OpenInTerminal"
 guard let defaults = UserDefaults(suiteName: group) else {
     print("SUITE-NIL: UserDefaults(suiteName:) returned nil")
     exit(1)
