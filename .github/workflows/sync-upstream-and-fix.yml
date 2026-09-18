@@ -34,7 +34,6 @@ env:
     OpenInTerminalCore/Defaults.swift
     OpenInTerminalCore/DefaultsManager.swift
     OpenInTerminalFinderExtension/FinderSync.swift
-    OpenInTerminalFinderExtension/OpenInTerminalFinderExtension.entitlements
     build-unsigned.sh
 
 jobs:
