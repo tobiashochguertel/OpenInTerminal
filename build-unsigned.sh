@@ -65,6 +65,7 @@ for pair in "${TARGETS[@]}"; do
     -derivedDataPath "$DERIVED" \
     -destination 'generic/platform=macOS' \
     CODE_SIGNING_ALLOWED=NO \
+    MACOSX_DEPLOYMENT_TARGET=12.0 \
     build >/dev/null
 
   app="$PRODUCTS/$scheme.app"

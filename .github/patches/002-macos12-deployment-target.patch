@@ -1,0 +1,12 @@
+diff --git i/build-unsigned.sh w/build-unsigned.sh
+index b996a66..41bbdf1 100755
+--- i/build-unsigned.sh
++++ w/build-unsigned.sh
+@@ -65,6 +65,7 @@ for pair in "${TARGETS[@]}"; do
+     -derivedDataPath "$DERIVED" \
+     -destination 'generic/platform=macOS' \
+     CODE_SIGNING_ALLOWED=NO \
++    MACOSX_DEPLOYMENT_TARGET=12.0 \
+     build >/dev/null
+ 
+   app="$PRODUCTS/$scheme.app"
