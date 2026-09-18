@@ -1,0 +1,68 @@
+diff --git c/OpenInTerminal.xcodeproj/project.pbxproj w/OpenInTerminal.xcodeproj/project.pbxproj
+index 1caffbe..03b4033 100644
+--- c/OpenInTerminal.xcodeproj/project.pbxproj
++++ w/OpenInTerminal.xcodeproj/project.pbxproj
+@@ -13,6 +13,7 @@
+ 		4725254022680F5A003C50DF /* Terminal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4725253E22680F5A003C50DF /* Terminal.swift */; };
+ 		4725254122680F5A003C50DF /* Finder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4725253F22680F5A003C50DF /* Finder.swift */; };
+ 		4725254422680F7C003C50DF /* Log.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4725254222680F7C003C50DF /* Log.swift */; };
++		0AC0FFEE0AC0FFEE0AC00001 /* OITLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AC0FFEE0AC0FFEE0AC00002 /* OITLog.swift */; };
+ 		472525592268100F003C50DF /* FinderAssets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 472525572268100F003C50DF /* FinderAssets.xcassets */; };
+ 		4725255A2268100F003C50DF /* FinderSync.swift in Sources */ = {isa = PBXBuildFile; fileRef = 472525582268100F003C50DF /* FinderSync.swift */; };
+ 		4725256222681098003C50DF /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4725256122681098003C50DF /* AppDelegate.swift */; };
+@@ -151,6 +152,7 @@
+ 		4725253E22680F5A003C50DF /* Terminal.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Terminal.swift; sourceTree = "<group>"; };
+ 		4725253F22680F5A003C50DF /* Finder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Finder.swift; sourceTree = "<group>"; };
+ 		4725254222680F7C003C50DF /* Log.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Log.swift; sourceTree = "<group>"; };
++		0AC0FFEE0AC0FFEE0AC00002 /* OITLog.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OITLog.swift; sourceTree = "<group>"; };
+ 		4725254322680F7C003C50DF /* Error.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Error.swift; sourceTree = "<group>"; };
+ 		4725254A22680FEB003C50DF /* OpenInTerminalFinderExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = OpenInTerminalFinderExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+ 		4725254E22680FEB003C50DF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+@@ -251,6 +253,7 @@
+ 				95DFC1232354A2C300941D3A /* DefaultsManager.swift */,
+ 				95CE2788257F2F3A0053D76A /* Error.swift */,
+ 				4725254222680F7C003C50DF /* Log.swift */,
++				0AC0FFEE0AC0FFEE0AC00002 /* OITLog.swift */,
+ 				4725253422680EFD003C50DF /* FinderManager.swift */,
+ 				95C7C2ED257B7D63004C8355 /* App.swift */,
+ 				9592D636258CB9210031CA30 /* AppManager.swift */,
+@@ -613,6 +616,7 @@
+ 			files = (
+ 				95CE277E257E470F0053D76A /* ScriptManager.swift in Sources */,
+ 				4725254422680F7C003C50DF /* Log.swift in Sources */,
++				0AC0FFEE0AC0FFEE0AC00001 /* OITLog.swift in Sources */,
+ 				4725253522680EFD003C50DF /* FinderManager.swift in Sources */,
+ 				95C7C2EE257B7D63004C8355 /* App.swift in Sources */,
+ 				9584EAB82CF06A500080F94F /* PathExtensions.swift in Sources */,
+diff --git c/OpenInTerminalFinderExtension/FinderSync.swift w/OpenInTerminalFinderExtension/FinderSync.swift
+index 4f06ace..8a821aa 100644
+--- c/OpenInTerminalFinderExtension/FinderSync.swift
++++ w/OpenInTerminalFinderExtension/FinderSync.swift
+@@ -44,7 +44,11 @@ class FinderSync: FIFinderSync {
+     
+     override func menu(for menuKind: FIMenuKind) -> NSMenu {
+         var menu = NSMenu(title: "")
+-        
++
++        let dm = DefaultsManager.shared
++        OITLog.menu.info("menu kind=\(menuKind.rawValue) bundle=\(Bundle.main.bundleIdentifier ?? "nil", privacy: .public) suiteKeys=\(Defaults.dictionaryRepresentation().count) hideCtx=\(dm.isHideContextMenuItems) submenu=\(dm.isContextMenuUseSubmenu) pin=\(dm.isContextMenuPinDefaultTerminal) customCtx=\(dm.isCustomMenuApplyToContext) customTb=\(dm.isCustomMenuApplyToToolbar)")
++        OITLog.menu.info("defTerm=\(dm.defaultTerminal?.name ?? "nil", privacy: .public) defEditor=\(dm.defaultEditor?.name ?? "nil", privacy: .public) customApps=\(dm.customMenuOptions?.count ?? -1)")
++
+         switch menuKind {
+ 
+         case .contextualMenuForContainer,
+@@ -76,7 +80,13 @@ class FinderSync: FIFinderSync {
+         default:
+             break
+         }
+-        
++
++        let titles = menu.items.map { $0.isSeparatorItem ? "---" : $0.title }.joined(separator: " | ")
++        if menu.items.isEmpty {
++            OITLog.menu.error("menu kind=\(menuKind.rawValue) -> 0 items")
++        } else {
++            OITLog.menu.notice("menu kind=\(menuKind.rawValue) -> \(menu.items.count) items: \(titles, privacy: .public)")
++        }
+         return menu
+     }
+     

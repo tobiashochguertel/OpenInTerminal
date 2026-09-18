@@ -44,7 +44,11 @@ class FinderSync: FIFinderSync {
     
     override func menu(for menuKind: FIMenuKind) -> NSMenu {
         var menu = NSMenu(title: "")
-        
+
+        let dm = DefaultsManager.shared
+        OITLog.menu.info("menu kind=\(menuKind.rawValue) bundle=\(Bundle.main.bundleIdentifier ?? "nil", privacy: .public) suiteKeys=\(Defaults.dictionaryRepresentation().count) hideCtx=\(dm.isHideContextMenuItems) submenu=\(dm.isContextMenuUseSubmenu) pin=\(dm.isContextMenuPinDefaultTerminal) customCtx=\(dm.isCustomMenuApplyToContext) customTb=\(dm.isCustomMenuApplyToToolbar)")
+        OITLog.menu.info("defTerm=\(dm.defaultTerminal?.name ?? "nil", privacy: .public) defEditor=\(dm.defaultEditor?.name ?? "nil", privacy: .public) customApps=\(dm.customMenuOptions?.count ?? -1)")
+
         switch menuKind {
 
         case .contextualMenuForContainer,
@@ -76,7 +80,13 @@ class FinderSync: FIFinderSync {
         default:
             break
         }
-        
+
+        let titles = menu.items.map { $0.isSeparatorItem ? "---" : $0.title }.joined(separator: " | ")
+        if menu.items.isEmpty {
+            OITLog.menu.error("menu kind=\(menuKind.rawValue) -> 0 items")
+        } else {
+            OITLog.menu.notice("menu kind=\(menuKind.rawValue) -> \(menu.items.count) items: \(titles, privacy: .public)")
+        }
         return menu
     }
     

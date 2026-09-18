@@ -34,6 +34,7 @@ env:
     OpenInTerminalCore/Defaults.swift
     OpenInTerminalCore/DefaultsManager.swift
     OpenInTerminalFinderExtension/FinderSync.swift
+    OpenInTerminal.xcodeproj/project.pbxproj
     build-unsigned.sh
     build-signed.sh
 
