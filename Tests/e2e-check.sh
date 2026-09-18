@@ -111,13 +111,13 @@ else
     bad "group plist missing: $GROUP_PLIST"
 fi
 
-echo "== 7. recent [OIT] diagnostics from the extension (last 10 min)"
-LINES=$(log show --last 10m --predicate 'process == "OpenInTerminalFinderExtension"' 2>/dev/null | grep '\[OIT\]' | tail -10)
+echo "== 7. recent menu() diagnostics from the extension (last 10 min)"
+LINES=$(log show --last 10m --predicate 'subsystem == "wang.jianing.app.OpenInTerminal"' 2>/dev/null | grep ':menu]' | tail -10)
 if [ -n "$LINES" ]; then
     echo "$LINES" | sed 's/^/  ->  /'
     ok "extension produced menu() diagnostics"
 else
-    note "no [OIT] lines yet — right-click a Finder item, then re-run this script"
+    note "no menu() lines yet — run Tests/e2e-finder.sh to trigger them automatically"
 fi
 
 echo
