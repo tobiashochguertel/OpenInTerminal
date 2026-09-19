@@ -14,6 +14,14 @@
 #     (System Settings > Privacy & Security > Accessibility)
 #   - the signed app installed at /Applications/OpenInTerminal.app
 #
+# User-impact notes: real HID clicks require the Finder window to be active
+# and on top (CGEventPostToPid does not work for Finder mouse events), so
+# Finder takes focus once for ~5s. Your frontmost app, cursor position, and
+# the test window are restored afterwards. You can keep working — a stray
+# click can only cancel one menu query, which is retried automatically; the
+# assertions read os_log and survive early dismissal. Safe to launch in the
+# background: ./Tests/e2e-finder.sh &
+#
 # The test directory is ~/Library/oit-e2e — deliberately NOT inside Desktop,
 # Documents, iCloud Drive, or third-party cloud-sync folders, because macOS
 # suppresses FinderSync extensions there (rdar FB13109005 and the
@@ -180,16 +188,47 @@ rightclick() {
 }
 
 # host app must have run once for FinderSync activation; extension spawns on demand
-open -a "$APP" 2>/dev/null
+# (-g: launch in background — do not steal focus for this)
+open -g -a "$APP" 2>/dev/null
 sleep 1
 
 START_TS=$(date '+%Y-%m-%d %H:%M:%S')
 note "log window starts at $START_TS"
 
+dismiss_menu() {
+    # pid-targeted Escape first: safe even if focus already raced back to the
+    # user's app. Then the proven global Escape, but only while Finder is
+    # still frontmost — never send keystrokes to the user's app.
+    if [ "$(basename "$CLICK")" != "cliclick" ]; then
+        "$CLICK" --escape >/dev/null 2>&1
+    fi
+    if [ "$(osascript -e 'tell application "System Events" to name of first application process whose frontmost is true' 2>/dev/null)" = "Finder" ]; then
+        osascript -e 'tell application "System Events" to key code 53' >/dev/null 2>&1
+    fi
+}
+
 # ---------------------------------------------------------------------------
-# Phase 3: real context-menu trigger
+# Phase 3: GUI trigger cycle.
+#
+# A real HID right-click only reaches Finder when its window is active and on
+# top (CGEventPostToPid does not work — Finder drops pid-posted mouse events).
+# So Finder must take focus — but only ONCE, for ~5s: both menu triggers run
+# inside a single activate/restore cycle, and the user's frontmost app plus
+# cursor position are restored immediately afterwards.
+#
+# Interception note: Finder queries the extension asynchronously, so a stray
+# user click during the ~1.5s dwell can cancel the menu before menu() runs.
+# The context trigger therefore retries once automatically; assertions are
+# log-based and survive any dismissal that happens after menu() fired.
 # ---------------------------------------------------------------------------
-echo "== 3. trigger Finder context menu (kind=0)"
+echo "== 3. GUI trigger cycle (Finder takes focus for ~5s)"
+FRONT_APP=$(osascript -e 'tell application "System Events" to name of first application process whose frontmost is true' 2>/dev/null)
+CURSOR_POS=""
+if [ "$(basename "$CLICK")" != "cliclick" ]; then
+    CURSOR_POS=$("$CLICK" --pos 2>/dev/null || true)
+fi
+note "frontmost app: ${FRONT_APP:-unknown} | cursor: ${CURSOR_POS:-unknown}"
+
 osascript <<'EOF' >/dev/null 2>&1
 tell application "Finder"
     activate
@@ -203,7 +242,8 @@ end tell
 EOF
 sleep 1
 
-# locate the file row and its screen coordinates
+# --- context-menu trigger: locate the file row, right-click it, dwell while
+# --- Finder's async extension query completes, retry once if it was cancelled
 COORDS=$(osascript <<'EOF' 2>/dev/null
 tell application "System Events"
     tell process "Finder"
@@ -221,44 +261,27 @@ tell application "System Events"
 end tell
 EOF
 )
-
 COORDS=$(echo "$COORDS" | tr -d ',')
+
 if [ -z "$COORDS" ]; then
     bad "could not locate '$TEST_FILE' row in Finder window (accessibility permission?)"
 else
     read -r RX RY RW RH <<< "$COORDS"
     CX=$((RX + 120)); CY=$((RY + RH / 2))
-    note "right-clicking '$TEST_FILE' at $CX,$CY (row $RX,$RY ${RW}x${RH})"
-    rightclick "$CX" "$CY"
-    sleep 2
-    # dismiss whatever menu opened
-    osascript -e 'tell application "System Events" to key code 53' >/dev/null 2>&1
-
-    CTX_LOG=$(log show --start "$START_TS" --predicate "$LOG_PREDICATE" 2>/dev/null | grep 'menu kind=0 ->' | tail -1)
-    if [ -n "$CTX_LOG" ]; then
-        note "$CTX_LOG"
-        ITEMS=$(echo "$CTX_LOG" | sed -n 's/.*menu kind=0 -> \([0-9]*\) items.*/\1/p')
-        if [ "${ITEMS:-0}" -gt 0 ]; then
-            ok "context menu returned $ITEMS items"
-            echo "$CTX_LOG" | grep -q "Ghostty" \
-                && ok "context menu contains pinned default terminal (Ghostty)" \
-                || bad "context menu missing Ghostty"
-            echo "$CTX_LOG" | grep -qi "Open in" \
-                && ok "context menu contains submenu" \
-                || bad "context menu missing submenu"
-        else
-            bad "context menu() called but returned 0 items"
+    for attempt in 1 2; do
+        note "right-clicking '$TEST_FILE' at $CX,$CY (row $RX,$RY ${RW}x${RH}, attempt $attempt)"
+        rightclick "$CX" "$CY"
+        sleep 1.5
+        if log show --start "$START_TS" --predicate "$LOG_PREDICATE" 2>/dev/null | grep -q 'menu kind=0 ->'; then
+            break
         fi
-    else
-        bad "menu kind=0 never logged — Finder did not query the extension"
-        note "check: is $TEST_DIR under a cloud-sync path? is another FinderSync extension claiming it?"
-    fi
+        dismiss_menu
+        sleep 0.5
+    done
+    dismiss_menu
 fi
 
-# ---------------------------------------------------------------------------
-# Phase 4: real toolbar-menu trigger
-# ---------------------------------------------------------------------------
-echo "== 4. trigger Finder toolbar menu (kind=3)"
+# --- toolbar-menu trigger: AXPress works without extra mouse events
 osascript <<'EOF' >/dev/null 2>&1
 tell application "System Events"
     tell process "Finder"
@@ -266,9 +289,47 @@ tell application "System Events"
     end tell
 end tell
 EOF
-sleep 2
-osascript -e 'tell application "System Events" to key code 53' >/dev/null 2>&1
+sleep 1.5
+dismiss_menu
 
+# --- restore the user's session: frontmost app, cursor position, test window
+if [ -n "$FRONT_APP" ] && [ "$FRONT_APP" != "Finder" ]; then
+    osascript -e "tell application \"System Events\" to set frontmost of process \"$FRONT_APP\" to true" >/dev/null 2>&1
+fi
+if [ -n "$CURSOR_POS" ]; then
+    "$CLICK" --warp $CURSOR_POS >/dev/null 2>&1 || true
+fi
+osascript -e 'tell application "Finder" to close Finder window "oit-e2e"' >/dev/null 2>&1 || true
+ok "GUI triggers complete — focus restored to ${FRONT_APP:-previous app}"
+
+# ---------------------------------------------------------------------------
+# Phase 4: assert context-menu result (kind=0)
+# ---------------------------------------------------------------------------
+echo "== 4. assert context menu (kind=0)"
+CTX_LOG=$(log show --start "$START_TS" --predicate "$LOG_PREDICATE" 2>/dev/null | grep 'menu kind=0 ->' | tail -1)
+if [ -n "$CTX_LOG" ]; then
+    note "$CTX_LOG"
+    ITEMS=$(echo "$CTX_LOG" | sed -n 's/.*menu kind=0 -> \([0-9]*\) items.*/\1/p')
+    if [ "${ITEMS:-0}" -gt 0 ]; then
+        ok "context menu returned $ITEMS items"
+        echo "$CTX_LOG" | grep -q "Ghostty" \
+            && ok "context menu contains pinned default terminal (Ghostty)" \
+            || bad "context menu missing Ghostty"
+        echo "$CTX_LOG" | grep -qi "Open in" \
+            && ok "context menu contains submenu" \
+            || bad "context menu missing submenu"
+    else
+        bad "context menu() called but returned 0 items"
+    fi
+else
+    bad "menu kind=0 never logged — Finder did not query the extension"
+    note "check: is $TEST_DIR under a cloud-sync path? is another FinderSync extension claiming it?"
+fi
+
+# ---------------------------------------------------------------------------
+# Phase 5: assert toolbar-menu result (kind=3)
+# ---------------------------------------------------------------------------
+echo "== 5. assert toolbar menu (kind=3)"
 TB_LOG=$(log show --start "$START_TS" --predicate "$LOG_PREDICATE" 2>/dev/null | grep 'menu kind=3 ->' | tail -1)
 if [ -n "$TB_LOG" ]; then
     note "$TB_LOG"
@@ -290,9 +351,9 @@ else
 fi
 
 # ---------------------------------------------------------------------------
-# Phase 5: no sandbox/preference denials during the run
+# Phase 6: no sandbox/preference denials during the run
 # ---------------------------------------------------------------------------
-echo "== 5. check for denials during this run"
+echo "== 6. check for denials during this run"
 DENIALS=$(log show --start "$START_TS" --predicate 'process == "OpenInTerminalFinderExtension"' 2>/dev/null \
     | grep -iE "deny|denied|REJECTED|requires user-preference-read|file-read-data" | tail -5)
 if [ -z "$DENIALS" ]; then
