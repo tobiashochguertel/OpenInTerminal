@@ -117,7 +117,9 @@ fi
 
 # config.json is the canonical configuration source — seed it deterministically
 # so the test does not depend on whatever the app last migrated.
-GROUP_DIR="$(dirname "$GROUP_PLIST")/.."
+# GROUP_PLIST is <container>/Library/Preferences/<group>.plist — the
+# container root (where config.json lives) is two levels up.
+GROUP_DIR="$(dirname "$GROUP_PLIST")/../.."
 cat > "$GROUP_DIR/config.json" <<'JSON'
 {
   "version": 1,
@@ -234,9 +236,15 @@ tell application "Finder"
     activate
     open folder "oit-e2e" of folder "Library" of home
     delay 1
-    try
-        set current view of front Finder window to list view
-    end try
+    -- list view is required for the AXOutline row lookup; set it by window
+    -- name (front Finder window races window creation) and retry briefly
+    repeat 6 times
+        try
+            set current view of Finder window "oit-e2e" to list view
+            exit repeat
+        end try
+        delay 0.5
+    end repeat
     select file "testfile.txt" of folder "oit-e2e" of folder "Library" of home
 end tell
 EOF
@@ -244,19 +252,39 @@ sleep 1
 
 # --- context-menu trigger: locate the file row, right-click it, dwell while
 # --- Finder's async extension query completes, retry once if it was cancelled
+# The file row's depth in the AX tree varies with sidebar/view layout, and
+# 'entire contents' is unreliable on some systems — walk the tree recursively
+# via UI elements and match the row by its text field value.
 COORDS=$(osascript <<'EOF' 2>/dev/null
-tell application "System Events"
-    tell process "Finder"
-        set ol to outline 1 of scroll area 1 of splitter group 1 of splitter group 1 of window "oit-e2e"
-        repeat with r in rows of ol
+on findRow(el, target)
+    tell application "System Events"
+        try
+            if role of el is "AXRow" then
+                try
+                    if value of text field 1 of UI element 1 of el is target then
+                        set p to position of el
+                        set s to size of el
+                        return {(item 1 of p), (item 2 of p), (item 1 of s), (item 2 of s)}
+                    end if
+                end try
+            end if
+        end try
+        repeat with c in (UI elements of el)
             try
-                if value of text field 1 of UI element 1 of r is "testfile.txt" then
-                    set p to position of r
-                    set s to size of r
-                    return (item 1 of p) & " " & (item 2 of p) & " " & (item 1 of s) & " " & (item 2 of s)
-                end if
+                set r to my findRow(c, target)
+                if r is not false then return r
             end try
         end repeat
+    end tell
+    return false
+end findRow
+
+tell application "System Events"
+    tell process "Finder"
+        set hit to my findRow(window "oit-e2e", "testfile.txt")
+        if hit is not false then
+            return (item 1 of hit) & " " & (item 2 of hit) & " " & (item 3 of hit) & " " & (item 4 of hit)
+        end if
     end tell
 end tell
 EOF
@@ -281,15 +309,53 @@ else
     dismiss_menu
 fi
 
-# --- toolbar-menu trigger: AXPress works without extra mouse events
+# --- toolbar-menu trigger: AXPress works without extra mouse events.
+# The button's AX *name* may stay "missing value" even though its
+# *description* resolves — match the description, then fall back to the
+# generic unnamed extension button.
 osascript <<'EOF' >/dev/null 2>&1
 tell application "System Events"
     tell process "Finder"
-        click menu button "Open in Terminal" of toolbar 1 of window "oit-e2e"
+        tell toolbar 1 of window "oit-e2e"
+            repeat with el in UI elements
+                try
+                    if role of el is "AXMenuButton" and (description of el is "Open in Terminal" or description of el is "menu button") then
+                        click el
+                        return
+                    end if
+                end try
+            end repeat
+        end tell
     end tell
 end tell
 EOF
 sleep 1.5
+# Capture the open menu's items directly — more reliable than os_log on
+# systems where logd retention is limited (e.g. lightweight VMs).
+TOOLBAR_ITEMS=$(osascript <<'EOF' 2>/dev/null
+tell application "System Events"
+    tell process "Finder"
+        tell toolbar 1 of window "oit-e2e"
+            repeat with el in UI elements
+                try
+                    if role of el is "AXMenuButton" and (description of el is "Open in Terminal" or description of el is "menu button") then
+                        tell menu 1 of el
+                            set out to ""
+                            repeat with mi in UI elements
+                                try
+                                    set out to out & (name of mi) & " | "
+                                end try
+                            end repeat
+                            return out
+                        end tell
+                    end if
+                end try
+            end repeat
+        end tell
+    end tell
+end tell
+EOF
+)
 dismiss_menu
 
 # --- restore the user's session: frontmost app, cursor position, test window
@@ -330,24 +396,29 @@ fi
 # Phase 5: assert toolbar-menu result (kind=3)
 # ---------------------------------------------------------------------------
 echo "== 5. assert toolbar menu (kind=3)"
-TB_LOG=$(log show --start "$START_TS" --predicate "$LOG_PREDICATE" 2>/dev/null | grep 'menu kind=3 ->' | tail -1)
-if [ -n "$TB_LOG" ]; then
-    note "$TB_LOG"
-    ITEMS=$(echo "$TB_LOG" | sed -n 's/.*menu kind=3 -> \([0-9]*\) items.*/\1/p')
-    if [ "${ITEMS:-0}" -gt 0 ]; then
-        ok "toolbar menu returned $ITEMS items"
-        echo "$TB_LOG" | grep -q "Ghostty" \
-            && ok "toolbar menu contains Ghostty" \
-            || bad "toolbar menu missing Ghostty"
-        echo "$TB_LOG" | grep -q "iTerm" \
-            && ok "toolbar menu contains custom terminals" \
-            || bad "toolbar menu missing custom terminals"
-    else
-        bad "toolbar menu() called but returned 0 items"
-    fi
+# Primary: items captured from the open AX menu. Supplementary: the
+# menu kind=3 log line (missing on systems with thin logd retention).
+if [ -n "$TOOLBAR_ITEMS" ]; then
+    note "toolbar menu items: ${TOOLBAR_ITEMS% | }"
+    ok "toolbar menu opened"
+    echo "$TOOLBAR_ITEMS" | grep -q "Ghostty" \
+        && ok "toolbar menu contains Ghostty" \
+        || bad "toolbar menu missing Ghostty"
+    echo "$TOOLBAR_ITEMS" | grep -q "iTerm" \
+        && ok "toolbar menu contains custom terminals" \
+        || bad "toolbar menu missing custom terminals"
+    echo "$TOOLBAR_ITEMS" | grep -q "Copy path" \
+        && ok "toolbar menu contains Copy path" \
+        || bad "toolbar menu missing Copy path"
 else
-    bad "menu kind=3 never logged — toolbar button missing or never clicked"
-    note "the 'Open in Terminal' toolbar item must be added to the Finder toolbar once"
+    TB_LOG=$(log show --start "$START_TS" --predicate "$LOG_PREDICATE" 2>/dev/null | grep 'menu kind=3 ->' | tail -1)
+    if [ -n "$TB_LOG" ]; then
+        note "$TB_LOG"
+        ok "toolbar menu() called"
+    else
+        bad "toolbar menu never opened — toolbar button missing or never clicked"
+        note "the 'Open in Terminal' toolbar item must be added to the Finder toolbar once"
+    fi
 fi
 
 # ---------------------------------------------------------------------------

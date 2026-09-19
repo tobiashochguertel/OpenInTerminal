@@ -45,6 +45,10 @@ class FinderSync: FIFinderSync {
     override func menu(for menuKind: FIMenuKind) -> NSMenu {
         var menu = NSMenu(title: "")
 
+        // Re-read config.json on every menu request — the appex is long-lived
+        // and must pick up config changes without a respawn.
+        ConfigStore.shared.load()
+
         let dm = DefaultsManager.shared
         OITLog.menu.info("menu kind=\(menuKind.rawValue) bundle=\(Bundle.main.bundleIdentifier ?? "nil", privacy: .public) suiteKeys=\(Defaults.dictionaryRepresentation().count) hideCtx=\(dm.isHideContextMenuItems) submenu=\(dm.isContextMenuUseSubmenu) pin=\(dm.isContextMenuPinDefaultTerminal) customCtx=\(dm.isCustomMenuApplyToContext) customTb=\(dm.isCustomMenuApplyToToolbar)")
         OITLog.menu.info("defTerm=\(dm.defaultTerminal?.name ?? "nil", privacy: .public) defEditor=\(dm.defaultEditor?.name ?? "nil", privacy: .public) customApps=\(dm.customMenuOptions?.count ?? -1) items=\(ConfigStore.shared.resolvedItems().count) configIssues=\(ConfigStore.shared.issues.count)")
