@@ -47,7 +47,7 @@ class FinderSync: FIFinderSync {
 
         let dm = DefaultsManager.shared
         OITLog.menu.info("menu kind=\(menuKind.rawValue) bundle=\(Bundle.main.bundleIdentifier ?? "nil", privacy: .public) suiteKeys=\(Defaults.dictionaryRepresentation().count) hideCtx=\(dm.isHideContextMenuItems) submenu=\(dm.isContextMenuUseSubmenu) pin=\(dm.isContextMenuPinDefaultTerminal) customCtx=\(dm.isCustomMenuApplyToContext) customTb=\(dm.isCustomMenuApplyToToolbar)")
-        OITLog.menu.info("defTerm=\(dm.defaultTerminal?.name ?? "nil", privacy: .public) defEditor=\(dm.defaultEditor?.name ?? "nil", privacy: .public) customApps=\(dm.customMenuOptions?.count ?? -1)")
+        OITLog.menu.info("defTerm=\(dm.defaultTerminal?.name ?? "nil", privacy: .public) defEditor=\(dm.defaultEditor?.name ?? "nil", privacy: .public) customApps=\(dm.customMenuOptions?.count ?? -1) items=\(ConfigStore.shared.resolvedItems().count) configIssues=\(ConfigStore.shared.issues.count)")
 
         switch menuKind {
 
@@ -178,8 +178,25 @@ class FinderSync: FIFinderSync {
     func createCustomMenu(useSubmenu: Bool) -> NSMenu {
         let menu = NSMenu(title: "")
 
-        // get saved custom apps
-        guard let customApps = DefaultsManager.shared.customMenuOptions else {
+        // resolved menu items from config.json (catalog refs, inline custom
+        // apps, and built-in action items, in configured order); when the
+        // config has no items, fall back to legacy CustomMenuOptions so an
+        // unmigrated or deleted config.json never produces an empty menu
+        var resolved = ConfigStore.shared.resolvedItems().filter { !$0.hidden }
+        if resolved.isEmpty, let legacy = DefaultsManager.shared.customMenuOptions {
+            resolved = legacy.map { app in
+                let cat = AppCatalog.shared.resolve(app: app)
+                return ResolvedMenuItem(
+                    content: cat.map { .catalogApp($0) } ?? .customApp(app, nil),
+                    title: app.name,
+                    options: [:],
+                    hidden: false,
+                    source: MenuItemConfig(ref: cat?.id,
+                                           app: cat == nil ? InlineAppDef(name: app.name, type: app.type, bundleId: app.bundleId, open: nil) : nil))
+            }
+        }
+        guard !resolved.isEmpty,
+              resolved.contains(where: { $0.app != nil }) else {
             return menu
         }
 
@@ -195,18 +212,27 @@ class FinderSync: FIFinderSync {
             menu.addItem(.separator())
         }
 
-        customApps.forEach { app in
-            let itemTitle = app.name
-            let menuItem = NSMenuItem(title: itemTitle,
-                                      action: #selector(customMenuItemClicked),
-                                      keyEquivalent: "")
-            let appIcon = DefaultsManager.shared.getAppIcon(app)
-            menuItem.image = appIcon
-            itemsMenu.addItem(menuItem)
+        var hasCopyPath = false
+        for (index, item) in resolved.enumerated() {
+            switch item.content {
+            case .action(.copyPath):
+                hasCopyPath = true
+                itemsMenu.addItem(self.copyPathItem)
+            case .catalogApp, .customApp:
+                guard let app = item.app else { continue }
+                let menuItem = NSMenuItem(title: item.title,
+                                          action: #selector(customMenuItemClicked),
+                                          keyEquivalent: "")
+                menuItem.image = DefaultsManager.shared.getAppIcon(app)
+                menuItem.representedObject = index
+                itemsMenu.addItem(menuItem)
+            }
         }
 
-        // add "Copy Path"
-        itemsMenu.addItem(self.copyPathItem)
+        // keep "Copy Path" appended unless the config placed it explicitly
+        if !hasCopyPath {
+            itemsMenu.addItem(self.copyPathItem)
+        }
 
         // attach the items menu under a single top level item when needed
         if useSubmenu {
@@ -236,6 +262,19 @@ class FinderSync: FIFinderSync {
             try app.openInSandbox(urls)
         } catch {
             logw("Failed to open \(app.name) with \(urls)")
+        }
+    }
+
+    /// Opens a resolved menu item: uses the item's effective open recipe
+    /// (per-item options may select a variant, e.g. Terminal's tab script).
+    func open(_ item: ResolvedMenuItem) {
+        guard let app = item.app else { return }
+        let urls = getSelectedPathsFromFinder()
+        do {
+            try app.openInSandbox(urls, recipe: item.openRecipe)
+            OITLog.action.info("open '\(item.title, privacy: .public)' recipe argv=\(item.openRecipe.argv.joined(separator: " "), privacy: .public) script=\(item.openRecipe.script ?? "general", privacy: .public)")
+        } catch {
+            OITLog.action.error("open '\(item.title, privacy: .public)' failed: \(error.localizedDescription, privacy: .public)")
         }
     }
     
@@ -294,14 +333,10 @@ class FinderSync: FIFinderSync {
     }
     
     @objc func customMenuItemClicked(_ sender: NSMenuItem) {
-        guard let customApps = DefaultsManager.shared.customMenuOptions else { return }
-        let appName = sender.title
-        for app in customApps {
-            if app.name == appName {
-                open(app)
-                break
-            }
-        }
+        let resolved = ConfigStore.shared.resolvedItems().filter { !$0.hidden }
+        guard let index = sender.representedObject as? Int,
+              resolved.indices.contains(index) else { return }
+        open(resolved[index])
     }
     
     @objc func copyPathToClipboard() {

@@ -1,0 +1,82 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openinterminal.local/schemas/config.schema.json",
+  "title": "OpenInTerminal Configuration",
+  "description": "Canonical user configuration. Lives in the app-group container so the sandboxed Finder extension can read it.",
+  "type": "object",
+  "required": ["version"],
+  "additionalProperties": false,
+  "properties": {
+    "version": { "type": "integer", "const": 1 },
+    "defaultTerminal": { "type": "string", "description": "Catalog or user app id, or a display name resolvable via the catalog." },
+    "defaultEditor": { "type": "string" },
+    "general": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "launchAtLogin": { "type": "boolean" },
+        "quickToggle": { "type": "boolean" },
+        "quickToggleType": { "enum": ["openWithDefaultTerminal", "openWithDefaultEditor", "copyPathToClipboard"] },
+        "hideStatusItem": { "type": "boolean" },
+        "onlyActivateShortcutsInFinder": { "type": "boolean" }
+      }
+    },
+    "menu": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "hideContextMenuItems": { "type": "boolean" },
+        "useSubmenu": { "type": "boolean" },
+        "pinDefaultTerminal": { "type": "boolean" },
+        "applyToContext": { "type": "boolean" },
+        "applyToToolbar": { "type": "boolean" },
+        "iconOption": { "enum": ["no", "simple", "original"] },
+        "pathEscaped": { "type": "boolean" },
+        "items": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/item" }
+        }
+      }
+    },
+    "apps": {
+      "type": "array",
+      "description": "User-defined catalog entries. Merged over the bundled catalog; same shape as appcatalog.schema.json entries.",
+      "items": { "$ref": "appcatalog.schema.json#/$defs/app" }
+    }
+  },
+  "$defs": {
+    "item": {
+      "type": "object",
+      "description": "One menu entry: a catalog/user app by ref, an inline custom app, or a built-in action.",
+      "oneOf": [
+        { "required": ["ref"] },
+        { "required": ["app"] },
+        { "required": ["kind"] }
+      ],
+      "properties": {
+        "ref": { "type": "string", "description": "id of a bundled or user-defined app entry." },
+        "app": {
+          "type": "object",
+          "required": ["name", "type"],
+          "additionalProperties": false,
+          "properties": {
+            "name": { "type": "string", "minLength": 1 },
+            "type": { "enum": ["terminal", "editor"] },
+            "bundleId": { "type": "string" },
+            "open": { "$ref": "appcatalog.schema.json#/$defs/openRecipe" }
+          }
+        },
+        "kind": { "enum": ["action"], "description": "Non-app item." },
+        "action": { "enum": ["copyPath"], "description": "Built-in action, when kind=action." },
+        "label": { "type": "string", "description": "Display-name override." },
+        "options": {
+          "type": "object",
+          "description": "Per-item option values; keys must exist in the app's option definitions.",
+          "additionalProperties": true
+        },
+        "hidden": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    }
+  }
+}

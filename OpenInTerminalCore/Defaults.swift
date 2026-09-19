@@ -53,6 +53,7 @@ public extension DefaultsKeys {
     static let customMenuApplyToContext = DefaultsKey<Bool>("CustomMenuApplyToContext")
     static let customMenuIconOption = DefaultsKey<String>("CustomMenuIconOption")
     static let pathEscapeOption = DefaultsKey<Bool>("PathEscapeOption")
+    static let configMigrated = DefaultsKey<Bool>("ConfigMigrated")
     static let kittyCommand = DefaultsKey<String>("KittyCommand")
     static let onlyActivateShortcutsInFinder = DefaultsKey<Bool>("OnlyActivateShortcutsInFinder")
     static let neovimCommand = DefaultsKey<String>("NeovimCommand")

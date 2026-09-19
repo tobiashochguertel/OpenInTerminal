@@ -1,0 +1,604 @@
+{
+  "schemaVersion": 1,
+  "apps": [
+    {
+      "id": "terminal",
+      "name": "Terminal",
+      "type": "terminal",
+      "bundleId": "com.apple.Terminal",
+      "open": {
+        "argv": [
+          "-a",
+          "Terminal"
+        ],
+        "pathMode": "appendFirst"
+      },
+      "options": {
+        "newInstance": {
+          "type": "choice",
+          "label": "Open in",
+          "default": "window",
+          "choices": [
+            {
+              "value": "window",
+              "label": "Window"
+            },
+            {
+              "value": "tab",
+              "label": "Tab",
+              "open": {
+                "argv": [
+                  "-a",
+                  "Terminal"
+                ],
+                "script": "terminalNewTabScript"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "iterm2",
+      "name": "iTerm",
+      "type": "terminal",
+      "bundleId": "com.googlecode.iterm2",
+      "open": {
+        "argv": [
+          "-a",
+          "iTerm"
+        ],
+        "pathMode": "appendFirst"
+      },
+      "options": {
+        "newInstance": {
+          "type": "choice",
+          "label": "Open in",
+          "default": "window",
+          "choices": [
+            {
+              "value": "window",
+              "label": "Window",
+              "apply": {
+                "defaultsWrite": {
+                  "domain": "com.googlecode.iterm2",
+                  "key": "OpenFileInNewWindows",
+                  "value": true
+                }
+              }
+            },
+            {
+              "value": "tab",
+              "label": "Tab",
+              "apply": {
+                "defaultsWrite": {
+                  "domain": "com.googlecode.iterm2",
+                  "key": "OpenFileInNewWindows",
+                  "value": false
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "id": "hyper",
+      "name": "Hyper",
+      "type": "terminal",
+      "bundleId": "co.zeit.hyper",
+      "open": {
+        "argv": [
+          "-a",
+          "Hyper"
+        ],
+        "pathMode": "appendFirst"
+      }
+    },
+    {
+      "id": "alacritty",
+      "name": "Alacritty",
+      "type": "terminal",
+      "bundleId": "io.alacritty",
+      "open": {
+        "argv": [
+          "-na",
+          "Alacritty",
+          "--args",
+          "--working-directory"
+        ],
+        "pathMode": "appendFirst"
+      }
+    },
+    {
+      "id": "kitty",
+      "name": "kitty",
+      "type": "terminal",
+      "bundleId": "net.kovidgoyal.kitty",
+      "open": {
+        "argv": [
+          "-na",
+          "kitty",
+          "--args",
+          "--single-instance",
+          "--instance-group",
+          "1",
+          "--directory"
+        ],
+        "pathMode": "appendFirst"
+      }
+    },
+    {
+      "id": "wezterm",
+      "name": "WezTerm",
+      "type": "terminal",
+      "bundleId": "com.github.wez.wezterm",
+      "open": {
+        "argv": [
+          "-na",
+          "wezterm",
+          "--args",
+          "start",
+          "--cwd"
+        ],
+        "pathMode": "appendFirst"
+      }
+    },
+    {
+      "id": "tabby",
+      "name": "Tabby",
+      "type": "terminal",
+      "bundleId": "org.tabby",
+      "open": {
+        "argv": [
+          "-na",
+          "tabby",
+          "--args",
+          "--directory"
+        ],
+        "pathMode": "appendFirst"
+      }
+    },
+    {
+      "id": "warp",
+      "name": "Warp",
+      "type": "terminal",
+      "bundleId": "dev.warp",
+      "open": {
+        "argv": [
+          "-a",
+          "Warp"
+        ],
+        "pathMode": "appendFirst"
+      }
+    },
+    {
+      "id": "cmux",
+      "name": "cmux",
+      "type": "terminal",
+      "bundleId": "com.cmuxterm.app",
+      "open": {
+        "argv": [
+          "-a",
+          "cmux"
+        ],
+        "pathMode": "appendFirst"
+      }
+    },
+    {
+      "id": "github-desktop",
+      "name": "GitHub Desktop",
+      "type": "terminal",
+      "open": {
+        "argv": [
+          "-a",
+          "GitHub Desktop"
+        ],
+        "pathMode": "appendFirst"
+      }
+    },
+    {
+      "id": "gitkraken",
+      "name": "GitKraken",
+      "type": "terminal",
+      "bundleId": "com.axosoft.gitkraken",
+      "open": {
+        "argv": [
+          "-na",
+          "GitKraken",
+          "--args",
+          "--path"
+        ],
+        "pathMode": "appendFirst"
+      }
+    },
+    {
+      "id": "fork",
+      "name": "Fork",
+      "type": "terminal",
+      "open": {
+        "argv": [
+          "-a",
+          "Fork"
+        ],
+        "pathMode": "appendFirst"
+      }
+    },
+    {
+      "id": "ghostty",
+      "name": "Ghostty",
+      "type": "terminal",
+      "bundleId": "com.mitchellh.ghostty",
+      "open": {
+        "argv": [
+          "-a",
+          "Ghostty"
+        ],
+        "pathMode": "appendFirst"
+      }
+    },
+    {
+      "id": "kaku",
+      "name": "Kaku",
+      "type": "terminal",
+      "bundleId": "fun.tw93.kaku",
+      "open": {
+        "argv": [
+          "-a",
+          "Kaku"
+        ],
+        "pathMode": "appendFirst"
+      }
+    },
+    {
+      "id": "textedit",
+      "name": "TextEdit",
+      "type": "editor",
+      "bundleId": "com.apple.TextEdit",
+      "open": {
+        "argv": [
+          "-a",
+          "TextEdit"
+        ],
+        "pathMode": "append"
+      }
+    },
+    {
+      "id": "xcode",
+      "name": "Xcode",
+      "type": "editor",
+      "bundleId": "com.apple.Xcode",
+      "open": {
+        "argv": [
+          "-a",
+          "Xcode"
+        ],
+        "pathMode": "append"
+      }
+    },
+    {
+      "id": "vscode",
+      "name": "Visual Studio Code",
+      "type": "editor",
+      "bundleId": "com.microsoft.VSCode",
+      "open": {
+        "argv": [
+          "-a",
+          "Visual Studio Code"
+        ],
+        "pathMode": "append"
+      }
+    },
+    {
+      "id": "atom",
+      "name": "Atom",
+      "type": "editor",
+      "bundleId": "com.github.atom",
+      "open": {
+        "argv": [
+          "-a",
+          "Atom"
+        ],
+        "pathMode": "append"
+      }
+    },
+    {
+      "id": "sublime-text",
+      "name": "Sublime Text",
+      "type": "editor",
+      "bundleId": "com.sublimetext.3",
+      "open": {
+        "argv": [
+          "-a",
+          "Sublime Text"
+        ],
+        "pathMode": "append"
+      }
+    },
+    {
+      "id": "vscodium",
+      "name": "VSCodium",
+      "type": "editor",
+      "bundleId": "com.visualstudio.code.oss",
+      "open": {
+        "argv": [
+          "-a",
+          "VSCodium"
+        ],
+        "pathMode": "append"
+      }
+    },
+    {
+      "id": "bbedit",
+      "name": "BBEdit",
+      "type": "editor",
+      "bundleId": "com.barebones.bbedit",
+      "open": {
+        "argv": [
+          "-a",
+          "BBEdit"
+        ],
+        "pathMode": "append"
+      }
+    },
+    {
+      "id": "vscode-insiders",
+      "name": "Visual Studio Code - Insiders",
+      "type": "editor",
+      "bundleId": "com.microsoft.VSCodeInsiders",
+      "open": {
+        "argv": [
+          "-a",
+          "Visual Studio Code - Insiders"
+        ],
+        "pathMode": "append"
+      }
+    },
+    {
+      "id": "textmate",
+      "name": "TextMate",
+      "type": "editor",
+      "bundleId": "com.macromates.TextMate",
+      "open": {
+        "argv": [
+          "-a",
+          "TextMate"
+        ],
+        "pathMode": "append"
+      }
+    },
+    {
+      "id": "coteditor",
+      "name": "CotEditor",
+      "type": "editor",
+      "open": {
+        "argv": [
+          "-a",
+          "CotEditor"
+        ],
+        "pathMode": "append"
+      }
+    },
+    {
+      "id": "macvim",
+      "name": "MacVim",
+      "type": "editor",
+      "bundleId": "org.vim.MacVim",
+      "open": {
+        "argv": [
+          "-a",
+          "MacVim"
+        ],
+        "pathMode": "append"
+      }
+    },
+    {
+      "id": "typora",
+      "name": "Typora",
+      "type": "editor",
+      "bundleId": "abnerworks.Typora",
+      "open": {
+        "argv": [
+          "-a",
+          "Typora"
+        ],
+        "pathMode": "append"
+      }
+    },
+    {
+      "id": "nova",
+      "name": "Nova",
+      "type": "editor",
+      "bundleId": "com.panic.Nova",
+      "open": {
+        "argv": [
+          "-a",
+          "Nova"
+        ],
+        "pathMode": "append"
+      }
+    },
+    {
+      "id": "cursor",
+      "name": "Cursor",
+      "type": "editor",
+      "bundleId": "com.todesktop.230313mzl4w4u92",
+      "open": {
+        "argv": [
+          "-a",
+          "Cursor"
+        ],
+        "pathMode": "append"
+      }
+    },
+    {
+      "id": "neovim",
+      "name": "Neovim",
+      "type": "editor",
+      "open": {
+        "argv": [
+          "-na",
+          "kitty",
+          "--args",
+          "/opt/homebrew/bin/nvim",
+          "{paths}"
+        ],
+        "pathMode": "placeholder"
+      }
+    },
+    {
+      "id": "zed",
+      "name": "Zed",
+      "type": "editor",
+      "open": {
+        "argv": [
+          "-a",
+          "Zed"
+        ],
+        "pathMode": "append"
+      }
+    },
+    {
+      "id": "emacs",
+      "name": "Emacs",
+      "type": "editor",
+      "bundleId": "org.gnu.Emacs",
+      "open": {
+        "argv": [
+          "-a",
+          "Emacs"
+        ],
+        "pathMode": "append"
+      }
+    },
+    {
+      "id": "appcode",
+      "name": "AppCode",
+      "type": "editor",
+      "bundleId": "com.jetbrains.appcode",
+      "open": {
+        "argv": [
+          "-a",
+          "AppCode"
+        ],
+        "pathMode": "append"
+      }
+    },
+    {
+      "id": "clion",
+      "name": "CLion",
+      "type": "editor",
+      "bundleId": "com.jetbrains.clion",
+      "open": {
+        "argv": [
+          "-a",
+          "CLion"
+        ],
+        "pathMode": "append"
+      }
+    },
+    {
+      "id": "fleet",
+      "name": "Fleet",
+      "type": "editor",
+      "bundleId": "com.jetbrains.fleet",
+      "open": {
+        "argv": [
+          "-a",
+          "Fleet"
+        ],
+        "pathMode": "append"
+      }
+    },
+    {
+      "id": "goland",
+      "name": "GoLand",
+      "type": "editor",
+      "bundleId": "com.jetbrains.goland",
+      "open": {
+        "argv": [
+          "-a",
+          "GoLand"
+        ],
+        "pathMode": "append"
+      }
+    },
+    {
+      "id": "intellij-idea",
+      "name": "IntelliJ IDEA",
+      "type": "editor",
+      "bundleId": "com.jetbrains.intellij",
+      "open": {
+        "argv": [
+          "-a",
+          "IntelliJ IDEA"
+        ],
+        "pathMode": "append"
+      }
+    },
+    {
+      "id": "phpstorm",
+      "name": "PhpStorm",
+      "type": "editor",
+      "bundleId": "com.jetbrains.PhpStorm",
+      "open": {
+        "argv": [
+          "-a",
+          "PhpStorm"
+        ],
+        "pathMode": "append"
+      }
+    },
+    {
+      "id": "pycharm",
+      "name": "PyCharm",
+      "type": "editor",
+      "bundleId": "com.jetbrains.pycharm",
+      "open": {
+        "argv": [
+          "-a",
+          "PyCharm"
+        ],
+        "pathMode": "append"
+      }
+    },
+    {
+      "id": "rubymine",
+      "name": "RubyMine",
+      "type": "editor",
+      "bundleId": "com.jetbrains.rubymine",
+      "open": {
+        "argv": [
+          "-a",
+          "RubyMine"
+        ],
+        "pathMode": "append"
+      }
+    },
+    {
+      "id": "webstorm",
+      "name": "WebStorm",
+      "type": "editor",
+      "bundleId": "com.jetbrains.webstorm",
+      "open": {
+        "argv": [
+          "-a",
+          "WebStorm"
+        ],
+        "pathMode": "append"
+      }
+    },
+    {
+      "id": "android-studio",
+      "name": "Android Studio",
+      "type": "editor",
+      "open": {
+        "argv": [
+          "-a",
+          "Android Studio"
+        ],
+        "pathMode": "append"
+      }
+    }
+  ]
+}

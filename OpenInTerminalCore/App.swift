@@ -108,38 +108,58 @@ extension App: Openable {
     }
     
     public func openInSandbox(_ urls: [URL]) throws {
-        // Build the invocation as a list of discrete arguments — the leading
-        // program, the app-specific option tokens (trusted config from
-        // getOpenArguments), then the raw target paths as individual elements.
-        // The installed AppleScript shell-quotes every element via
-        // `quoted form of`, so nothing here is manually escaped and a crafted
-        // file/folder name cannot inject shell commands. This mirrors the
-        // argument-array approach used by openOutsideSandbox.
-        var arguments = ["/usr/bin/open"]
-        arguments.append(contentsOf: DefaultsManager.shared.getOpenArguments(self))
+        // resolve the recipe through the catalog (no per-item option context
+        // here — menu items pass their resolved recipe explicitly)
+        try openInSandbox(urls, recipe: DefaultsManager.shared.openRecipe(for: self))
+    }
 
-        switch self.type {
-        case .terminal:
+    /// Opens the urls using an explicit open recipe: argv template + path
+    /// delivery mode + optional named script. Recipe argv tokens are trusted
+    /// config; paths are always passed as discrete elements so a crafted
+    /// file/folder name cannot inject shell commands (the installed
+    /// AppleScript shell-quotes every element via `quoted form of`).
+    public func openInSandbox(_ urls: [URL], recipe: OpenRecipe) throws {
+        var arguments = ["/usr/bin/open"]
+        arguments.append(contentsOf: recipe.argv)
+
+        // path delivery per recipe.pathMode
+        switch recipe.pathMode {
+        case .appendFirst:
             guard var url = urls.first else { return }
             url.getDirectory()
             arguments.append(url.path)
-        case .editor:
+        case .append:
+            arguments.append(contentsOf: urls.map { $0.path })
+        case .placeholder:
             let paths = urls.map { $0.path }
-            // fix for neovim: the command template carries a "PATH" placeholder
-            // token that must be replaced by the actual path arguments.
-            if SupportedApps.is(self, is: .neovim) {
-                arguments = arguments.flatMap { $0 == "PATH" ? paths : [$0] }
-            } else {
-                arguments.append(contentsOf: paths)
-            }
+            arguments = arguments.flatMap { $0 == "{paths}" ? paths : [$0] }
+        case .none:
+            break
         }
 
-        // script
-        guard let scriptURL = ScriptManager.shared.getScriptURL(with: Constants.generalScript) else { return }
+        // named script overrides the general openApp script (e.g. Terminal's
+        // new-tab script). Script recipes receive a `cd <dir>` command as
+        // their single argv element.
+        let scriptName = recipe.script ?? Constants.generalScript
+        var eventArguments = arguments
+        if recipe.script != nil {
+            let dirPath: String
+            switch recipe.pathMode {
+            case .appendFirst, .placeholder:
+                var url = urls.first ?? URL(fileURLWithPath: NSHomeDirectory())
+                url.getDirectory()
+                dirPath = url.path
+            default:
+                dirPath = urls.first?.path ?? NSHomeDirectory()
+            }
+            eventArguments = ["cd \(dirPath.terminalPathEscaped())"]
+        }
+
+        guard let scriptURL = ScriptManager.shared.getScriptURL(with: scriptName) else { return }
         // excute
         guard FileManager.default.fileExists(atPath: scriptURL.path) else { return }
         guard let script = try? NSUserAppleScriptTask(url: scriptURL) else { return }
-        let event = ScriptManager.shared.getScriptEvent(functionName: "openApp", arguments: arguments)
+        let event = ScriptManager.shared.getScriptEvent(functionName: "openApp", arguments: eventArguments)
         script.execute(withAppleEvent: event) { (appleEvent, error) in
             if let error = error {
                 logw("cannot execute applescript: \(error)")

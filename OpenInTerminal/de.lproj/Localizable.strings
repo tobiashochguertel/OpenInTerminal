@@ -45,3 +45,10 @@
 "pref.general.context_menu_use_submenu" = "Kontextmenü-Einträge in einem Untermenü gruppieren";
 
 "pref.shortcuts_finder_only" = "Tastenkürzel nur im Finder aktivieren";
+
+"pref.custom.item.label" = "Beschriftung";
+"pref.custom.item.hidden" = "Diesen Menüeintrag ausblenden";
+"pref.custom.item.no_options" = "Dieser Eintrag hat keine konfigurierbaren Optionen.";
+"pref.custom.item.open_command" = "Öffnen-Befehl (open-Argumente)";
+"pref.custom.item.path_mode" = "Pfadmodus";
+"pref.custom.item.unresolved" = "nicht auflösbar";

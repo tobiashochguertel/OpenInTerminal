@@ -47,7 +47,8 @@ public class ScriptManager {
     /// Open path in a new tab of Terminal
     public func getTerminalNewTabAppleScript() -> String {
         let script = """
-        on openApp(command)
+        on openApp(argv)
+            set command to item 1 of argv
             if not application "Terminal" is running then
                 tell application "Terminal"
                     do script command

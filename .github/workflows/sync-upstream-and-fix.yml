@@ -34,7 +34,19 @@ env:
     OpenInTerminalCore/Constants.swift
     OpenInTerminalCore/Defaults.swift
     OpenInTerminalCore/DefaultsManager.swift
+    OpenInTerminalCore/App.swift
+    OpenInTerminalCore/ScriptManager.swift
     OpenInTerminal/OpenInTerminal.entitlements
+    OpenInTerminal/PreferencesWindow/CustomPreferencesViewController.swift
+    OpenInTerminal/de.lproj/Localizable.strings
+    OpenInTerminal/en.lproj/Localizable.strings
+    OpenInTerminal/es.lproj/Localizable.strings
+    OpenInTerminal/fr.lproj/Localizable.strings
+    OpenInTerminal/it.lproj/Localizable.strings
+    OpenInTerminal/ko.lproj/Localizable.strings
+    OpenInTerminal/ru.lproj/Localizable.strings
+    OpenInTerminal/tr.lproj/Localizable.strings
+    OpenInTerminal/zh-Hans.lproj/Localizable.strings
     OpenInTerminalFinderExtension/OpenInTerminalFinderExtension.entitlements
     OpenInTerminalFinderExtension/FinderSync.swift
     OpenInTerminal.xcodeproj/project.pbxproj

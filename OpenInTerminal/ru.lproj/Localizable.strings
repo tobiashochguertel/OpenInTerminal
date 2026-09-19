@@ -37,3 +37,10 @@
 "pref.general.context_menu_use_submenu" = "Группировать пункты контекстного меню в подменю";
 
 "pref.shortcuts_finder_only" = "Активировать сочетания клавиш только в Finder";
+
+"pref.custom.item.label" = "Label";
+"pref.custom.item.hidden" = "Hide this menu item";
+"pref.custom.item.no_options" = "This item has no configurable options.";
+"pref.custom.item.open_command" = "Open command (open args)";
+"pref.custom.item.path_mode" = "Path mode";
+"pref.custom.item.unresolved" = "unresolved";

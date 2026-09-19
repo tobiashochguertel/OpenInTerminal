@@ -107,6 +107,50 @@ else
         || bad "could not seed group preferences"
 fi
 
+# config.json is the canonical configuration source — seed it deterministically
+# so the test does not depend on whatever the app last migrated.
+GROUP_DIR="$(dirname "$GROUP_PLIST")/.."
+cat > "$GROUP_DIR/config.json" <<'JSON'
+{
+  "version": 1,
+  "defaultTerminal": "ghostty",
+  "menu": {
+    "pinDefaultTerminal": true,
+    "useSubmenu": true,
+    "applyToContext": true,
+    "applyToToolbar": true,
+    "items": [
+      {"ref": "iterm2"},
+      {"ref": "wezterm"},
+      {"ref": "alacritty"}
+    ]
+  }
+}
+JSON
+[ -f "$GROUP_DIR/config.json" ] && ok "config.json seeded in group container" \
+    || bad "could not write config.json to group container"
+
+# ---------------------------------------------------------------------------
+# Phase 1.5: warm up the FinderSync extension — Finder spawns it lazily, and a
+# fresh install/restart can take up to a minute before menu() is reachable.
+# ---------------------------------------------------------------------------
+echo "== 1.5 wait for extension process"
+EXT_BUNDLE="wang.jianing.app.OpenInTerminal.OpenInTerminalFinderExtension"
+pluginkit -e use -i "$EXT_BUNDLE" >/dev/null 2>&1 || true
+EXT_UP=0
+for i in $(seq 1 30); do
+    if pgrep -f "OpenInTerminalFinderExtension" >/dev/null; then
+        EXT_UP=1; break
+    fi
+    sleep 2
+done
+if [ "$EXT_UP" = "1" ]; then
+    ok "extension process running"
+    sleep 2   # let it finish sandbox/container init before Finder queries it
+else
+    bad "extension never spawned — is it enabled? (pluginkit -mAD -p com.apple.FinderSync)"
+fi
+
 # ---------------------------------------------------------------------------
 # Phase 2: prepare test directory, helper, and log baseline
 # ---------------------------------------------------------------------------

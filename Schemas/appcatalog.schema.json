@@ -1,0 +1,106 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openinterminal.local/schemas/appcatalog.schema.json",
+  "title": "OpenInTerminal App Catalog",
+  "description": "Declarative catalog of applications OpenInTerminal knows how to open paths with. Bundled inside the app; user-defined entries in config.json merge over it.",
+  "type": "object",
+  "required": ["schemaVersion", "apps"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": { "type": "integer", "const": 1 },
+    "apps": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/app" }
+    }
+  },
+  "$defs": {
+    "app": {
+      "type": "object",
+      "required": ["id", "name", "type", "open"],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^[a-z0-9][a-z0-9-]*$",
+          "description": "Stable identifier used by config.json refs. Never changes once shipped."
+        },
+        "name": { "type": "string", "minLength": 1, "description": "Display name; also used for `open -a <name>` and icon lookup." },
+        "type": { "enum": ["terminal", "editor"] },
+        "bundleId": { "type": "string", "description": "macOS bundle identifier, used for installed-app detection." },
+        "icon": { "type": "string", "description": "Asset-catalog icon name. Defaults to `name`." },
+        "open": { "$ref": "#/$defs/openRecipe" },
+        "options": {
+          "type": "object",
+          "description": "Configurable per-item options (e.g. iTerm window/tab). Keys are option ids.",
+          "additionalProperties": { "$ref": "#/$defs/optionDef" }
+        }
+      }
+    },
+    "openRecipe": {
+      "type": "object",
+      "required": ["argv"],
+      "additionalProperties": false,
+      "properties": {
+        "argv": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Arguments appended after `/usr/bin/open`. The literal token `{paths}` is replaced by the selected paths; without it, paths are appended per `pathMode`."
+        },
+        "pathMode": {
+          "enum": ["append", "appendFirst", "placeholder", "none"],
+          "default": "append",
+          "description": "append: all paths appended (editors). appendFirst: first path's directory appended (terminals). placeholder: `{paths}` tokens replaced. none: no paths appended."
+        },
+        "script": {
+          "type": "string",
+          "description": "Name of a .scpt in Application Scripts to run instead of the general openApp script."
+        }
+      }
+    },
+    "optionDef": {
+      "type": "object",
+      "required": ["type", "label"],
+      "additionalProperties": false,
+      "properties": {
+        "type": { "enum": ["choice", "bool"] },
+        "label": { "type": "string", "description": "GUI label for the option." },
+        "default": { "description": "Default value (choice value or bool)." },
+        "choices": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/choice" },
+          "description": "Required when type=choice."
+        },
+        "apply": { "$ref": "#/$defs/apply", "description": "Side effect for bool options when true." }
+      }
+    },
+    "choice": {
+      "type": "object",
+      "required": ["value", "label"],
+      "additionalProperties": false,
+      "properties": {
+        "value": { "type": "string" },
+        "label": { "type": "string" },
+        "apply": { "$ref": "#/$defs/apply", "description": "Side effect executed when this value is selected." },
+        "open": { "$ref": "#/$defs/openRecipe", "description": "Open recipe override when this value is selected." }
+      }
+    },
+    "apply": {
+      "type": "object",
+      "description": "A side effect executed when an option value is set.",
+      "minProperties": 1,
+      "additionalProperties": false,
+      "properties": {
+        "defaultsWrite": {
+          "type": "object",
+          "required": ["domain", "key", "value"],
+          "additionalProperties": false,
+          "properties": {
+            "domain": { "type": "string" },
+            "key": { "type": "string" },
+            "value": { "description": "bool, string, or number written via CFPreferences." }
+          }
+        }
+      }
+    }
+  }
+}

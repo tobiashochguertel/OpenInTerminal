@@ -1,0 +1,1614 @@
+diff --git c/OpenInTerminal.xcodeproj/project.pbxproj w/OpenInTerminal.xcodeproj/project.pbxproj
+index 03b4033..31453a3 100644
+--- c/OpenInTerminal.xcodeproj/project.pbxproj
++++ w/OpenInTerminal.xcodeproj/project.pbxproj
+@@ -14,6 +14,9 @@
+ 		4725254122680F5A003C50DF /* Finder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4725253F22680F5A003C50DF /* Finder.swift */; };
+ 		4725254422680F7C003C50DF /* Log.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4725254222680F7C003C50DF /* Log.swift */; };
+ 		0AC0FFEE0AC0FFEE0AC00001 /* OITLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AC0FFEE0AC0FFEE0AC00002 /* OITLog.swift */; };
++		0AC0FFEE0AC0FFEE0AC00003 /* Catalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AC0FFEE0AC0FFEE0AC00004 /* Catalog.swift */; };
++		0AC0FFEE0AC0FFEE0AC00005 /* ConfigStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AC0FFEE0AC0FFEE0AC00006 /* ConfigStore.swift */; };
++		0AC0FFEE0AC0FFEE0AC00007 /* AppCatalog.json in Resources */ = {isa = PBXBuildFile; fileRef = 0AC0FFEE0AC0FFEE0AC00008 /* AppCatalog.json */; };
+ 		472525592268100F003C50DF /* FinderAssets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 472525572268100F003C50DF /* FinderAssets.xcassets */; };
+ 		4725255A2268100F003C50DF /* FinderSync.swift in Sources */ = {isa = PBXBuildFile; fileRef = 472525582268100F003C50DF /* FinderSync.swift */; };
+ 		4725256222681098003C50DF /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4725256122681098003C50DF /* AppDelegate.swift */; };
+@@ -153,6 +156,9 @@
+ 		4725253F22680F5A003C50DF /* Finder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Finder.swift; sourceTree = "<group>"; };
+ 		4725254222680F7C003C50DF /* Log.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Log.swift; sourceTree = "<group>"; };
+ 		0AC0FFEE0AC0FFEE0AC00002 /* OITLog.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OITLog.swift; sourceTree = "<group>"; };
++		0AC0FFEE0AC0FFEE0AC00004 /* Catalog.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Catalog.swift; sourceTree = "<group>"; };
++		0AC0FFEE0AC0FFEE0AC00006 /* ConfigStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConfigStore.swift; sourceTree = "<group>"; };
++		0AC0FFEE0AC0FFEE0AC00008 /* AppCatalog.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = AppCatalog.json; sourceTree = "<group>"; };
+ 		4725254322680F7C003C50DF /* Error.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Error.swift; sourceTree = "<group>"; };
+ 		4725254A22680FEB003C50DF /* OpenInTerminalFinderExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = OpenInTerminalFinderExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+ 		4725254E22680FEB003C50DF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+@@ -254,6 +260,9 @@
+ 				95CE2788257F2F3A0053D76A /* Error.swift */,
+ 				4725254222680F7C003C50DF /* Log.swift */,
+ 				0AC0FFEE0AC0FFEE0AC00002 /* OITLog.swift */,
++				0AC0FFEE0AC0FFEE0AC00004 /* Catalog.swift */,
++				0AC0FFEE0AC0FFEE0AC00006 /* ConfigStore.swift */,
++				0AC0FFEE0AC0FFEE0AC00009 /* Resources */,
+ 				4725253422680EFD003C50DF /* FinderManager.swift */,
+ 				95C7C2ED257B7D63004C8355 /* App.swift */,
+ 				9592D636258CB9210031CA30 /* AppManager.swift */,
+@@ -276,6 +285,14 @@
+ 			path = ScriptingBridge;
+ 			sourceTree = "<group>";
+ 		};
++		0AC0FFEE0AC0FFEE0AC00009 /* Resources */ = {
++			isa = PBXGroup;
++			children = (
++				0AC0FFEE0AC0FFEE0AC00008 /* AppCatalog.json */,
++			);
++			path = Resources;
++			sourceTree = "<group>";
++		};
+ 		4725254B22680FEB003C50DF /* OpenInTerminalFinderExtension */ = {
+ 			isa = PBXGroup;
+ 			children = (
+@@ -568,6 +585,7 @@
+ 				95294D0825B3E17900CC995D /* Icons.xcassets in Resources */,
+ 				95C6C340227AA1CB00F157C4 /* Localizable.strings in Resources */,
+ 				9509DBDF300269CC00AE88FA /* AppIcon.icon in Resources */,
++				0AC0FFEE0AC0FFEE0AC00007 /* AppCatalog.json in Resources */,
+ 			);
+ 			runOnlyForDeploymentPostprocessing = 0;
+ 		};
+@@ -617,6 +635,8 @@
+ 				95CE277E257E470F0053D76A /* ScriptManager.swift in Sources */,
+ 				4725254422680F7C003C50DF /* Log.swift in Sources */,
+ 				0AC0FFEE0AC0FFEE0AC00001 /* OITLog.swift in Sources */,
++				0AC0FFEE0AC0FFEE0AC00003 /* Catalog.swift in Sources */,
++				0AC0FFEE0AC0FFEE0AC00005 /* ConfigStore.swift in Sources */,
+ 				4725253522680EFD003C50DF /* FinderManager.swift in Sources */,
+ 				95C7C2EE257B7D63004C8355 /* App.swift in Sources */,
+ 				9584EAB82CF06A500080F94F /* PathExtensions.swift in Sources */,
+diff --git c/OpenInTerminal/PreferencesWindow/CustomPreferencesViewController.swift w/OpenInTerminal/PreferencesWindow/CustomPreferencesViewController.swift
+index bec6678..4c2028d 100644
+--- c/OpenInTerminal/PreferencesWindow/CustomPreferencesViewController.swift
++++ w/OpenInTerminal/PreferencesWindow/CustomPreferencesViewController.swift
+@@ -5,36 +5,59 @@
+ //  Created by Jianing Wang on 2019/4/21.
+ //  Copyright © 2019 Jianing Wang. All rights reserved.
+ //
++//  Custom-menu preferences backed by config.json (ConfigStore). The table
++//  lists configured menu items; the options section below it is generated
++//  dynamically from each item's declared option definitions (AppCatalog),
++//  so any app — not only iTerm — can expose per-item options such as
++//  Window/Tab. Installed/not-installed lists and the "add" menus are
++//  data-driven from the catalog as well.
++//
+ 
+ import Cocoa
+ import OpenInTerminalCore
++import UniformTypeIdentifiers
++
++/// Carries the option id + value a generated control writes back.
++private final class OptionButton: NSButton {
++    var optionId = ""
++    var optionValue: JSONValue = .bool(true)
++}
++
++private final class OptionPopUpButton: NSPopUpButton {
++    var optionId = ""
++    var values: [String] = []
++}
+ 
+ class CustomPreferencesViewController: PreferencesViewController {
+-    
++
+     // MARK: Properties
+-    
++
+     @IBOutlet weak var installedApplicationsTextField: NSTextField!
+     @IBOutlet weak var notInstalledApplicationsTextField: NSTextField!
+-    
++
+     @IBOutlet weak var iTermTextField: NSTextField!
+     @IBOutlet weak var iTermWindowButton: NSButton!
+     @IBOutlet weak var iTermTabButton: NSButton!
+-    
++
+     @IBOutlet weak var customMenuTableView: NSTableView!
+     @IBOutlet weak var addMenuOptionButton: NSButton!
+     var addOptionMenu: NSMenu = NSMenu()
+     @IBOutlet weak var applyToToolbarButton: NSButton!
+     @IBOutlet weak var applyToContextButton: NSButton!
+-    
++
+     @IBOutlet weak var noIconButton: NSButton!
+     @IBOutlet weak var simpleIconButton: NSButton!
+     @IBOutlet weak var originalIconButton: NSButton!
+-    
++
+     @IBOutlet weak var pathNoButton: NSButton!
+     @IBOutlet weak var pathYesButton: NSButton!
+-    
++
+     private var dragDropType = NSPasteboard.PasteboardType(rawValue: "private.table-row")
+-    
++
++    /// Dynamically generated per-item options section, inserted into the
++    /// storyboard stack where the hardcoded iTerm row used to live.
++    private let itemOptionsStack = NSStackView()
++
+     var allInstalledAppNames: Set<String> = Set() {
+         didSet {
+             DispatchQueue.main.async {
+@@ -43,105 +66,319 @@ class CustomPreferencesViewController: PreferencesViewController {
+         }
+     }
+     var installedSupportedAppNames: [String] = []
+-        
+-    var customMenuOptions = [App]() {
++
++    /// The configured menu items (config.json `menu.items`). Mutations are
++    /// written back through `persistItems()`.
++    var menuItems: [MenuItemConfig] = [] {
+         didSet {
+-            customMenuTableView.reloadData()
+-            if customMenuOptions != DefaultsManager.shared.customMenuOptions {
+-                DefaultsManager.shared.customMenuOptions = customMenuOptions
+-            }
++            customMenuTableView?.reloadData()
+         }
+     }
+     var runningApps = [App]()
+-    
++
++    private var store: ConfigStore { ConfigStore.shared }
++    private var catalog: AppCatalog { AppCatalog.shared }
++
+     // MARK: Lifecycle
+-    
++
+     override func viewDidLoad() {
+         super.viewDidLoad()
+         customMenuTableView.dataSource = self
+         customMenuTableView.delegate = self
+         customMenuTableView.registerForDraggedTypes([dragDropType])
++        installItemOptionsSection()
+     }
+-    
++
+     override func viewWillAppear() {
+         super.viewWillAppear()
+         // fetch installed apps
+         DispatchQueue.global(qos: .background).async {
+             self.allInstalledAppNames = FinderManager.shared.getAllInstalledApps()
+         }
+-        // get saved custom menu apps
+-        if let customMenuOptions = DefaultsManager.shared.customMenuOptions {
+-            self.customMenuOptions = customMenuOptions
+-        }
++        // get saved custom menu items
++        menuItems = store.config.menu?.items ?? []
+         refreshSupportedApps()
+         refreshCustomButtons()
+         refreshIconTypeOptionState()
++        rebuildItemOptions()
++    }
++
++    // MARK: - Per-item options section
++
++    /// Replaces the storyboard's hardcoded iTerm Window/Tab group with a
++    /// dynamically generated section driven by the selected item's option
++    /// definitions. The iTerm controls are hidden (the stack detaches them).
++    private func installItemOptionsSection() {
++        itemOptionsStack.orientation = .vertical
++        itemOptionsStack.alignment = .leading
++        itemOptionsStack.spacing = 4
++        itemOptionsStack.detachesHiddenViews = true
++        itemOptionsStack.translatesAutoresizingMaskIntoConstraints = false
++
++        // `iTermTextField` sits inside the hardcoded iTerm group stack;
++        // hide that group and occupy its slot in the parent stack.
++        guard let itermGroup = iTermTextField?.superview as? NSStackView,
++              let parent = itermGroup.superview as? NSStackView else {
++            iTermTextField?.superview?.isHidden = true
++            return
++        }
++        let index = parent.arrangedSubviews.firstIndex(of: itermGroup)
++            ?? parent.arrangedSubviews.count
++        itermGroup.isHidden = true
++        parent.insertArrangedSubview(itemOptionsStack, at: index)
+     }
+-    
+-    override func viewDidAppear() {
+-        super.viewDidAppear()
++
++    /// Rebuilds the options controls for the currently selected table row.
++    func rebuildItemOptions() {
++        itemOptionsStack.arrangedSubviews.forEach {
++            itemOptionsStack.removeArrangedSubview($0)
++            $0.removeFromSuperview()
++        }
++        let row = customMenuTableView.selectedRow
++        guard row >= 0, row < menuItems.count else {
++            itemOptionsStack.isHidden = true
++            return
++        }
++        itemOptionsStack.isHidden = false
++        let item = menuItems[row]
++        let title = store.displayTitle(for: item)
++
++        itemOptionsStack.addArrangedSubview(headerField(title))
++
++        // Label override (all item kinds)
++        itemOptionsStack.addArrangedSubview(
++            textFieldRow(label: NSLocalizedString("pref.custom.item.label", comment: "Label"),
++                         value: item.label ?? "",
++                         tag: .label))
++        // Hidden toggle (all item kinds)
++        itemOptionsStack.addArrangedSubview(
++            checkbox(title: NSLocalizedString("pref.custom.item.hidden", comment: "Hide this menu item"),
++                     state: item.hidden ?? false))
++
++        switch store.resolvedItem(item)?.content {
++        case .catalogApp(let catApp):
++            addCatalogOptionControls(catApp: catApp, row: row)
++        case .customApp(let app, let recipe):
++            addInlineAppControls(app: app, recipe: recipe, row: row)
++        case .action, .none:
++            let hint = descriptionField(
++                NSLocalizedString("pref.custom.item.no_options",
++                                  comment: "This item has no configurable options."))
++            itemOptionsStack.addArrangedSubview(hint)
++        }
++    }
++
++    /// Generates one control row per declared option definition of the
++    /// catalog app (sorted by id for a stable layout).
++    private func addCatalogOptionControls(catApp: CatalogApp, row: Int) {
++        guard let defs = catApp.options, !defs.isEmpty else {
++            itemOptionsStack.addArrangedSubview(descriptionField(
++                NSLocalizedString("pref.custom.item.no_options",
++                                  comment: "This item has no configurable options.")))
++            return
++        }
++        let values = store.itemOptions(at: row)
++        for key in defs.keys.sorted() {
++            guard let def = defs[key] else { continue }
++            switch def.type {
++            case .choice:
++                itemOptionsStack.addArrangedSubview(plainLabel(def.label))
++                let radios = NSStackView()
++                radios.orientation = .horizontal
++                radios.spacing = 16
++                let current = values[key]?.stringValue ?? def.default?.stringValue
++                for choice in def.choices ?? [] {
++                    let b = OptionButton(radioButtonWithTitle: choice.label,
++                                         target: self,
++                                         action: #selector(optionChoiceClicked(_:)))
++                    b.optionId = key
++                    b.optionValue = .string(choice.value)
++                    b.state = (choice.value == current) ? .on : .off
++                    radios.addArrangedSubview(b)
++                }
++                itemOptionsStack.addArrangedSubview(radios)
++            case .bool:
++                let b = OptionButton(checkboxWithTitle: def.label,
++                                     target: self,
++                                     action: #selector(optionBoolClicked(_:)))
++                b.optionId = key
++                b.state = (values[key]?.boolValue ?? def.default?.boolValue ?? false) ? .on : .off
++                itemOptionsStack.addArrangedSubview(b)
++            }
++        }
++    }
++
++    /// Inline custom apps expose their open recipe for editing: argv
++    /// (space-separated `/usr/bin/open` arguments) and the path mode.
++    private func addInlineAppControls(app: App, recipe: OpenRecipe?, row: Int) {
++        itemOptionsStack.addArrangedSubview(
++            textFieldRow(label: NSLocalizedString("pref.custom.item.open_command", comment: "Open command (open args)"),
++                         value: (recipe?.argv ?? ["-a", app.name]).joined(separator: " "),
++                         tag: .argv))
++        let popup = OptionPopUpButton()
++        popup.optionId = "pathMode"
++        popup.values = [PathMode.appendFirst, .append, .placeholder, .none].map(\.rawValue)
++        popup.addItems(withTitles: popup.values)
++        popup.selectItem(withTitle: (recipe?.pathMode
++            ?? (app.type == .terminal ? .appendFirst : .append)).rawValue)
++        popup.target = self
++        popup.action = #selector(pathModeChanged(_:))
++        itemOptionsStack.addArrangedSubview(
++            labeled(NSLocalizedString("pref.custom.item.path_mode", comment: "Path mode"), control: popup))
++    }
++
++    // MARK: Option control actions
++
++    private enum FieldTag: Int { case label = 1, argv = 2 }
++
++    @objc private func optionChoiceClicked(_ sender: OptionButton) {
++        guard let row = selectedRow else { return }
++        store.setItemOption(at: row, optionId: sender.optionId, value: sender.optionValue)
++        syncItemsFromStore()
++        rebuildItemOptions()
++    }
++
++    @objc private func optionBoolClicked(_ sender: OptionButton) {
++        guard let row = selectedRow else { return }
++        store.setItemOption(at: row, optionId: sender.optionId,
++                            value: .bool(sender.state == .on))
++        syncItemsFromStore()
++    }
++
++    @objc private func pathModeChanged(_ sender: OptionPopUpButton) {
++        guard let row = selectedRow,
++              let raw = sender.selectedItem?.title,
++              let mode = PathMode(rawValue: raw) else { return }
++        mutateItem(at: row) { item in
++            guard var app = item.app else { return }
++            var recipe = app.open ?? OpenRecipe(argv: ["-a", app.name])
++            recipe.pathMode = mode
++            app.open = recipe
++            item.app = app
++        }
++    }
++
++    @objc private func hiddenToggled(_ sender: NSButton) {
++        guard let row = selectedRow else { return }
++        mutateItem(at: row) { $0.hidden = sender.state == .on }
++    }
++
++    private var selectedRow: Int? {
++        let row = customMenuTableView.selectedRow
++        return (row >= 0 && row < menuItems.count) ? row : nil
++    }
++
++    /// Applies an in-place mutation to menu.items[row], persists via
++    /// ConfigStore, and refreshes the display model + table.
++    private func mutateItem(at row: Int, _ mutate: (inout MenuItemConfig) -> Void) {
++        store.updateMenu { menu in
++            guard var items = menu.items, items.indices.contains(row) else { return }
++            mutate(&items[row])
++            menu.items = items
++        }
++        syncItemsFromStore()
++    }
++
++    private func syncItemsFromStore() {
++        menuItems = store.config.menu?.items ?? []
++    }
++
++    private func persistItems() {
++        let items = menuItems
++        store.updateMenu { $0.items = items }
++    }
++
++    // MARK: - Control builders
++
++    private func headerField(_ text: String) -> NSTextField {
++        let f = descriptionField(text)
++        f.font = NSFont.systemFont(ofSize: 13, weight: .semibold)
++        f.textColor = .labelColor
++        return f
++    }
++
++    private func plainLabel(_ text: String) -> NSTextField {
++        descriptionField(text)
++    }
++
++    private func descriptionField(_ text: String) -> NSTextField {
++        let f = NSTextField(labelWithString: text)
++        f.font = NSFont.systemFont(ofSize: 11)
++        f.textColor = .secondaryLabelColor
++        return f
++    }
++
++    private func labeled(_ label: String, control: NSView) -> NSStackView {
++        let row = NSStackView()
++        row.orientation = .horizontal
++        row.spacing = 8
++        row.addArrangedSubview(plainLabel(label))
++        row.addArrangedSubview(control)
++        return row
++    }
++
++    private func checkbox(title: String, state: Bool) -> NSButton {
++        let b = NSButton(checkboxWithTitle: title, target: self,
++                         action: #selector(hiddenToggled(_:)))
++        b.state = state ? .on : .off
++        return b
+     }
+-    
++
++    private func textFieldRow(label: String, value: String, tag: FieldTag) -> NSStackView {
++        let field = NSTextField(string: value)
++        field.tag = tag.rawValue
++        field.target = self
++        field.action = #selector(itemFieldCommitted(_:))
++        field.delegate = self
++        field.widthAnchor.constraint(greaterThanOrEqualToConstant: 160).isActive = true
++        return labeled(label, control: field)
++    }
++
++    /// NSTextField action (Enter) + delegate end-editing both funnel here.
++    @objc private func itemFieldCommitted(_ sender: NSTextField) {
++        guard let row = selectedRow else { return }
++        switch FieldTag(rawValue: sender.tag) {
++        case .label:
++            let text = sender.stringValue.trimmingCharacters(in: .whitespaces)
++            mutateItem(at: row) { $0.label = text.isEmpty ? nil : text }
++        case .argv:
++            let tokens = sender.stringValue
++                .split(separator: " ").map(String.init)
++            mutateItem(at: row) { item in
++                guard var app = item.app else { return }
++                var recipe = app.open ?? OpenRecipe(argv: [])
++                recipe.argv = tokens
++                app.open = recipe
++                item.app = app
++            }
++        case .none:
++            break
++        }
++    }
++
+     // MARK: Refresh UI
+-    
++
+     func refreshSupportedApps() {
+-        // get all installed supported apps
+-        installedSupportedAppNames = SupportedApps.allCases.map(\.name)
++        // catalog-driven lists (replaces the SupportedApps enum)
++        let catalogNames = catalog.apps.map(\.name)
++        installedSupportedAppNames = catalogNames
+             .filter(allInstalledAppNames.contains)
+             .sortedIgnoreCase()
+         installedApplicationsTextField.stringValue = installedSupportedAppNames.joined(separator: ", ")
+-        
+-        // get all not installed supported apps
+-        let notInstalledSupportedApps = SupportedApps.allCases.map(\.name)
++
++        let notInstalledSupportedApps = catalogNames
+             .filter { !installedSupportedAppNames.contains($0) }
+             .sortedIgnoreCase()
+         notInstalledApplicationsTextField.stringValue = notInstalledSupportedApps.joined(separator: ", ")
+-        
+-        // refresh text field enabled state
+-        let terminals: [(SupportedApps, NSTextField)] = [
+-            (.iTerm, iTermTextField)
+-        ]
+-        terminals.forEach { terminal, textField in
+-            let isInstalled = installedSupportedAppNames.contains(terminal.name)
+-            textField.isEnabled = isInstalled
+-            if isInstalled {
+-                textField.textColor = .labelColor
+-                textField.stringValue = "\(terminal.name)"
+-            } else {
+-                textField.textColor = .secondaryLabelColor
+-                let notInstalledString = NSLocalizedString("pref.toolbar.not_installed", comment: "Not Installed")
+-                textField.stringValue = "\(terminal.name) (\(notInstalledString))"
+-            }
+-        }
+-        
+-        // refresh button state
+-        iTermWindowButton.isEnabled = iTermTextField.isEnabled
+-        iTermTabButton.isEnabled = iTermTextField.isEnabled
+-        
+-        let terminalStates: [(SupportedApps, NSButton, NSButton)] = [
+-            (.iTerm, iTermWindowButton, iTermTabButton)
+-        ]
+-        terminalStates.forEach { terminal, windowButton, tabButton in
+-            let _newOption = DefaultsManager.shared.getNewOption(terminal)
+-            if let newOption = _newOption {
+-                if newOption == .window {
+-                    windowButton.state = .on
+-                    tabButton.state = .off
+-                } else {
+-                    windowButton.state = .off
+-                    tabButton.state = .on
+-                }
+-            }
+-        }
+     }
+-    
++
+     func refreshCustomButtons() {
+         let isApplyToToolbar = DefaultsManager.shared.isCustomMenuApplyToToolbar
+         applyToToolbarButton.state = isApplyToToolbar ? .on : .off
+ 
+         let isApplyToContext = DefaultsManager.shared.isCustomMenuApplyToContext
+         applyToContextButton.state = isApplyToContext ? .on : .off
+-        
++
+         let isPathEscaped = DefaultsManager.shared.isPathEscaped
+         if isPathEscaped {
+             pathYesButton.state = .on
+@@ -151,13 +388,13 @@ class CustomPreferencesViewController: PreferencesViewController {
+             pathNoButton.state = .on
+         }
+     }
+-    
++
+     func offIconTypeButtons() {
+         noIconButton.state = .off
+         simpleIconButton.state = .off
+         originalIconButton.state = .off
+     }
+-    
++
+     func refreshIconTypeOptionState() {
+         offIconTypeButtons()
+         let option = DefaultsManager.shared.customMenuIconOption
+@@ -170,42 +407,40 @@ class CustomPreferencesViewController: PreferencesViewController {
+             originalIconButton.state = .on
+         }
+     }
+-    
++
+     func refreshAddOptionMenu() {
+         addOptionMenu.removeAllItems()
+-        
+-        // 1. Installed Supported Apps
++
++        // 1. Installed Catalog Apps
+         let installedSupportedMenu = NSMenu()
+-        installedSupportedAppNames.forEach {
+-            let menuItem = NSMenuItem(title: $0,
++        for name in installedSupportedAppNames {
++            let menuItem = NSMenuItem(title: name,
+               action: #selector(selectSupportedApp),
+               keyEquivalent: "")
+             menuItem.target = self
+-            menuItem.image = NSImage(named: $0)
+-            menuItem.image?.size = NSSize(width: 14, height: 14)
++            menuItem.image = catalogIcon(for: name)
+             installedSupportedMenu.addItem(menuItem)
+         }
+         let installedSupportedMenuItem = NSMenuItem()
+         installedSupportedMenuItem.title = NSLocalizedString("pref.custom.menu.installed_supported", comment: "Installed Supported Apps")
+         addOptionMenu.addItem(installedSupportedMenuItem)
+         addOptionMenu.setSubmenu(installedSupportedMenu, for: installedSupportedMenuItem)
+-        
+-        // 2. All Supported Apps
++
++        // 2. All Catalog Apps
+         let supportedMenu = NSMenu()
+-        SupportedApps.allCases.forEach {
+-            let menuItem = NSMenuItem(title: $0.name,
++        for app in catalog.apps.sorted(by: { $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending }) {
++            let menuItem = NSMenuItem(title: app.name,
+                                       action: #selector(selectSupportedApp),
+                                       keyEquivalent: "")
+             menuItem.target = self
+-            menuItem.image = NSImage(named: $0.name)
+-            menuItem.image?.size = NSSize(width: 14, height: 14)
++            menuItem.image = catalogIcon(for: app.name)
+             supportedMenu.addItem(menuItem)
+         }
+         let supportedMenuItem = NSMenuItem()
+         supportedMenuItem.title = NSLocalizedString("pref.custom.menu.all_supported", comment: "All Supported Apps")
+         addOptionMenu.addItem(supportedMenuItem)
+         addOptionMenu.setSubmenu(supportedMenu, for: supportedMenuItem)
+-        
++
+         // 3. Running Applications
+         let runningMenu = NSMenu()
+         let runningApplications = NSWorkspace.shared.runningApplications
+@@ -229,62 +464,74 @@ class CustomPreferencesViewController: PreferencesViewController {
+         runningMenuItem.title = NSLocalizedString("pref.custom.menu.running_apps", comment: "Running Apps")
+         addOptionMenu.addItem(runningMenuItem)
+         addOptionMenu.setSubmenu(runningMenu, for: runningMenuItem)
+-        
+-        // 4. Manually Select From Finder
++
++        // 4. Built-in action: Copy Path
++        let copyPathTitle = NSLocalizedString("menu.copy_path_to_clipboard", comment: "Copy path")
++        let copyPathItem = NSMenuItem(title: "\(copyPathTitle) (action)",
++                                      action: #selector(selectCopyPathAction),
++                                      keyEquivalent: "")
++        copyPathItem.target = self
++        addOptionMenu.addItem(copyPathItem)
++
++        // 5. Manually Select From Finder
+         let manuallySelectTitle = NSLocalizedString("pref.custom.menu.manually_select", comment: "Manually Select From Finder")
+         let manuallySelectMenuItem = NSMenuItem(title: manuallySelectTitle,
+                                                 action: #selector(selectManuallySelect),
+                                                 keyEquivalent: "")
+         manuallySelectMenuItem.target = self
+         addOptionMenu.addItem(manuallySelectMenuItem)
+-        
+-        // 5. Manually Input
++
++        // 6. Manually Input
+         let manuallyInputTitle = NSLocalizedString("pref.custom.menu.manually_input", comment: "Manually Input")
+         let manuallyInputMenuItem = NSMenuItem(title: manuallyInputTitle,
+                                                 action: #selector(selectManuallyInput),
+                                                 keyEquivalent: "")
+         manuallyInputMenuItem.target = self
+         addOptionMenu.addItem(manuallyInputMenuItem)
+-        
+     }
+-    
++
++    private func catalogIcon(for name: String) -> NSImage? {
++        let image = NSImage(named: name)
++        image?.size = NSSize(width: 14, height: 14)
++        return image
++    }
++
+     // MARK: Button Actions
+-    
++
+     @IBAction func iTermWindowButtonClicked(_ sender: NSButton) {
+         iTermTabButton.state = .off
+         DefaultsManager.shared.setNewOption(.iTerm, .window)
+     }
+-    
++
+     @IBAction func iTermTabButtonClicked(_ sender: NSButton) {
+         iTermWindowButton.state = .off
+         DefaultsManager.shared.setNewOption(.iTerm, .tab)
+     }
+-    
++
+     @IBAction func pathNoButtonClicked(_ sender: NSButton) {
+         pathYesButton.state = .off
+         DefaultsManager.shared.isPathEscaped = false
+     }
+-    
++
+     @IBAction func pathYesButtonClicked(_ sender: NSButton) {
+         pathNoButton.state = .off
+         DefaultsManager.shared.isPathEscaped = true
+     }
+-    
++
+     @IBAction func addMenuOptionButtonClicked(_ sender: NSButton) {
+         refreshAddOptionMenu()
+         let point = NSPoint(x: sender.frame.origin.x, y: sender.frame.origin.y - (sender.frame.height / 2))
+         addOptionMenu.popUp(positioning: nil, at: point, in: sender.superview)
+     }
+-    
++
+     @objc func selectSupportedApp(_ sender: NSMenuItem) {
+         let selectedAppName = sender.title
+-        SupportedApps.allCases.forEach {
+-            if $0.name == selectedAppName {
+-                customMenuOptions.append($0.app)
+-            }
++        if let catApp = catalog.apps.first(where: { $0.name == selectedAppName }) {
++            menuItems.append(MenuItemConfig(ref: catApp.id))
++            persistItems()
+         }
+     }
+-    
++
+     @objc func selectRunningApp(_ sender: NSMenuItem) {
+         let selectedAppName = sender.title
+         runningApps.forEach {
+@@ -293,44 +540,50 @@ class CustomPreferencesViewController: PreferencesViewController {
+             }
+         }
+     }
+-    
++
++    @objc func selectCopyPathAction(_ sender: NSMenuItem) {
++        menuItems.append(MenuItemConfig(kind: "action", action: .copyPath))
++        persistItems()
++    }
++
+     @objc func selectManuallySelect(_ sender: NSMenuItem) {
+         openFileSelectPanel()
+     }
+-    
++
+     @objc func selectManuallyInput(_ sender: NSMenuItem) {
+         showCustomInputViewController()
+     }
+-    
++
+     func addCustomApp(_ app: App) {
+-        customMenuOptions.append(app)
+-        // TODO: generate script
++        // catalog app → reference; unknown app → inline definition
++        if let catApp = catalog.resolve(app: app) {
++            menuItems.append(MenuItemConfig(ref: catApp.id))
++        } else {
++            menuItems.append(MenuItemConfig(
++                app: InlineAppDef(name: app.name, type: app.type,
++                                  bundleId: app.bundleId)))
++        }
++        persistItems()
+     }
+-    
++
+     @IBAction func removeMenuOptionButtonClicked(_ sender: NSButton) {
+         let row = customMenuTableView.selectedRow
+-        guard row >= 0 else { return }
+-
+-        if let view = customMenuTableView.view(atColumn: 0, row: row, makeIfNecessary: false) as? NSTableCellView {
+-            let appName = view.textField?.stringValue ?? ""
+-            for customApp in customMenuOptions {
+-                if customApp.name == appName {
+-                    customMenuOptions.remove(element: customApp)
+-                }
+-            }
+-        }
++        guard row >= 0, row < menuItems.count else { return }
++        menuItems.remove(at: row)
++        persistItems()
++        rebuildItemOptions()
+     }
+-    
++
+     @IBAction func applyToToolbarButtonClicked(_ sender: NSButton) {
+         let isApplyTo = applyToToolbarButton.state == .on
+         DefaultsManager.shared.isCustomMenuApplyToToolbar = isApplyTo
+     }
+-    
++
+     @IBAction func applyToContextButtonClicked(_ sender: NSButton) {
+         let isApplyTo = applyToContextButton.state == .on
+         DefaultsManager.shared.isCustomMenuApplyToContext = isApplyTo
+     }
+-    
++
+     func showCustomInputViewController(_ appName: String = "") {
+         guard let customInputViewController = Constants.PreferencesStoryboard.instantiateController(withIdentifier: Constants.Id.CustomInputViewController) as? CustomInputViewController else {
+             return
+@@ -340,19 +593,19 @@ class CustomPreferencesViewController: PreferencesViewController {
+         }
+         self.presentAsSheet(customInputViewController)
+     }
+-    
++
+     @IBAction func noIconButtonClicked(_ sender: NSButton) {
+         offIconTypeButtons()
+         noIconButton.state = .on
+         DefaultsManager.shared.customMenuIconOption = .no
+     }
+-    
++
+     @IBAction func simpleIconButtonClicked(_ sender: NSButton) {
+         offIconTypeButtons()
+         simpleIconButton.state = .on
+         DefaultsManager.shared.customMenuIconOption = .simple
+     }
+-    
++
+     @IBAction func originalIconButtonClicked(_ sender: NSButton) {
+         offIconTypeButtons()
+         originalIconButton.state = .on
+@@ -364,18 +617,18 @@ extension CustomPreferencesViewController: NSTableViewDataSource {
+ 
+     func numberOfRows(in tableView: NSTableView) -> Int {
+         if tableView == customMenuTableView {
+-            return customMenuOptions.count
++            return menuItems.count
+         } else {
+             return 0
+         }
+     }
+-    
++
+     func tableView(_ tableView: NSTableView, pasteboardWriterForRow row: Int) -> NSPasteboardWriting? {
+         let item = NSPasteboardItem()
+         item.setString(String(row), forType: self.dragDropType)
+         return item
+     }
+-    
++
+     func tableView(_ tableView: NSTableView, validateDrop info: NSDraggingInfo, proposedRow row: Int, proposedDropOperation dropOperation: NSTableView.DropOperation) -> NSDragOperation {
+         if dropOperation == .above {
+             return .move
+@@ -392,8 +645,9 @@ extension CustomPreferencesViewController: NSTableViewDataSource {
+         }
+         var oldIndexOffset = 0
+         var newIndexOffset = 0
+-        
+-        customMenuOptions.move(with: IndexSet(oldIndexes), to: row)
++
++        menuItems.move(with: IndexSet(oldIndexes), to: row)
++        persistItems()
+ 
+         // For simplicity, the code below uses `tableView.moveRowAtIndex` to move rows around directly.
+         // You may want to move rows in your content array and then call `tableView.reloadData()` instead.
+@@ -417,15 +671,35 @@ extension CustomPreferencesViewController: NSTableViewDataSource {
+ }
+ 
+ extension CustomPreferencesViewController: NSTableViewDelegate {
+-    
++
+     func tableView(_ tableView: NSTableView, viewFor tableColumn: NSTableColumn?, row: Int) -> NSView? {
+         if let cell = tableView.makeView(withIdentifier: Constants.Id.CustomMenuCell, owner: nil) as? NSTableCellView {
+-            cell.textField?.stringValue = customMenuOptions[row].name
++            var title = store.displayTitle(for: menuItems[row])
++            if store.resolvedItem(menuItems[row]) == nil {
++                let missing = NSLocalizedString("pref.custom.item.unresolved", comment: "unresolved")
++                title += " (\(missing))"
++            }
++            cell.textField?.stringValue = title
+             return cell
+         }
+         return nil
+     }
+-    
++
++    func tableViewSelectionDidChange(_ notification: Notification) {
++        rebuildItemOptions()
++    }
++
++}
++
++extension CustomPreferencesViewController: NSTextFieldDelegate {
++
++    func controlTextDidEndEditing(_ obj: Notification) {
++        // text fields commit on focus loss too, not only on Enter
++        if let field = obj.object as? NSTextField {
++            itemFieldCommitted(field)
++        }
++    }
++
+ }
+ 
+ extension CustomPreferencesViewController: NSMenuDelegate {
+@@ -436,7 +710,7 @@ extension CustomPreferencesViewController: NSMenuDelegate {
+         openPanel.canChooseDirectories = false
+         openPanel.canChooseFiles = true
+         openPanel.allowsMultipleSelection = false
+-        openPanel.allowedFileTypes = ["app", "App", "APP"]
++        openPanel.allowedContentTypes = [.applicationBundle]
+         openPanel.beginSheetModal(for: view.window!, completionHandler: {
+             result in
+             if result == NSApplication.ModalResponse.OK {
+@@ -450,6 +724,5 @@ extension CustomPreferencesViewController: NSMenuDelegate {
+             }
+         })
+     }
+-    
+-    
++
+ }
+diff --git c/OpenInTerminal/de.lproj/Localizable.strings w/OpenInTerminal/de.lproj/Localizable.strings
+index 69fde43..9383fce 100644
+--- c/OpenInTerminal/de.lproj/Localizable.strings
++++ w/OpenInTerminal/de.lproj/Localizable.strings
+@@ -45,3 +45,10 @@
+ "pref.general.context_menu_use_submenu" = "Kontextmenü-Einträge in einem Untermenü gruppieren";
+ 
+ "pref.shortcuts_finder_only" = "Tastenkürzel nur im Finder aktivieren";
++
++"pref.custom.item.label" = "Beschriftung";
++"pref.custom.item.hidden" = "Diesen Menüeintrag ausblenden";
++"pref.custom.item.no_options" = "Dieser Eintrag hat keine konfigurierbaren Optionen.";
++"pref.custom.item.open_command" = "Öffnen-Befehl (open-Argumente)";
++"pref.custom.item.path_mode" = "Pfadmodus";
++"pref.custom.item.unresolved" = "nicht auflösbar";
+diff --git c/OpenInTerminal/en.lproj/Localizable.strings w/OpenInTerminal/en.lproj/Localizable.strings
+index 85634c7..935f1cd 100644
+--- c/OpenInTerminal/en.lproj/Localizable.strings
++++ w/OpenInTerminal/en.lproj/Localizable.strings
+@@ -43,3 +43,10 @@
+ 
+ "menu.submenu_title" = "Open in...";
+ "pref.general.context_menu_use_submenu" = "Group context menu items into a submenu";
++
++"pref.custom.item.label" = "Label";
++"pref.custom.item.hidden" = "Hide this menu item";
++"pref.custom.item.no_options" = "This item has no configurable options.";
++"pref.custom.item.open_command" = "Open command (open args)";
++"pref.custom.item.path_mode" = "Path mode";
++"pref.custom.item.unresolved" = "unresolved";
+diff --git c/OpenInTerminal/es.lproj/Localizable.strings w/OpenInTerminal/es.lproj/Localizable.strings
+index cdf51f1..e8d5a55 100644
+--- c/OpenInTerminal/es.lproj/Localizable.strings
++++ w/OpenInTerminal/es.lproj/Localizable.strings
+@@ -37,3 +37,10 @@
+ "pref.general.context_menu_use_submenu" = "Agrupar los elementos del menú contextual en un submenú";
+ 
+ "pref.shortcuts_finder_only" = "Activar los atajos solo en el Finder";
++
++"pref.custom.item.label" = "Label";
++"pref.custom.item.hidden" = "Hide this menu item";
++"pref.custom.item.no_options" = "This item has no configurable options.";
++"pref.custom.item.open_command" = "Open command (open args)";
++"pref.custom.item.path_mode" = "Path mode";
++"pref.custom.item.unresolved" = "unresolved";
+diff --git c/OpenInTerminal/fr.lproj/Localizable.strings w/OpenInTerminal/fr.lproj/Localizable.strings
+index 61ff27f..20491ab 100644
+--- c/OpenInTerminal/fr.lproj/Localizable.strings
++++ w/OpenInTerminal/fr.lproj/Localizable.strings
+@@ -37,3 +37,10 @@
+ "pref.general.context_menu_use_submenu" = "Regrouper les éléments du menu contextuel dans un sous-menu";
+ 
+ "pref.shortcuts_finder_only" = "Activer les raccourcis uniquement dans le Finder";
++
++"pref.custom.item.label" = "Label";
++"pref.custom.item.hidden" = "Hide this menu item";
++"pref.custom.item.no_options" = "This item has no configurable options.";
++"pref.custom.item.open_command" = "Open command (open args)";
++"pref.custom.item.path_mode" = "Path mode";
++"pref.custom.item.unresolved" = "unresolved";
+diff --git c/OpenInTerminal/it.lproj/Localizable.strings w/OpenInTerminal/it.lproj/Localizable.strings
+index 320709e..86451eb 100644
+--- c/OpenInTerminal/it.lproj/Localizable.strings
++++ w/OpenInTerminal/it.lproj/Localizable.strings
+@@ -37,3 +37,10 @@
+ "pref.general.context_menu_use_submenu" = "Raggruppa le voci del menu contestuale in un sottomenu";
+ 
+ "pref.shortcuts_finder_only" = "Attiva le scorciatoie solo nel Finder";
++
++"pref.custom.item.label" = "Label";
++"pref.custom.item.hidden" = "Hide this menu item";
++"pref.custom.item.no_options" = "This item has no configurable options.";
++"pref.custom.item.open_command" = "Open command (open args)";
++"pref.custom.item.path_mode" = "Path mode";
++"pref.custom.item.unresolved" = "unresolved";
+diff --git c/OpenInTerminal/ko.lproj/Localizable.strings w/OpenInTerminal/ko.lproj/Localizable.strings
+index ddae8e1..8e57994 100644
+--- c/OpenInTerminal/ko.lproj/Localizable.strings
++++ w/OpenInTerminal/ko.lproj/Localizable.strings
+@@ -45,3 +45,10 @@
+ "pref.general.context_menu_use_submenu" = "컨텍스트 메뉴 항목을 하위 메뉴로 그룹화";
+ 
+ "pref.shortcuts_finder_only" = "Finder에서만 단축키 활성화";
++
++"pref.custom.item.label" = "Label";
++"pref.custom.item.hidden" = "Hide this menu item";
++"pref.custom.item.no_options" = "This item has no configurable options.";
++"pref.custom.item.open_command" = "Open command (open args)";
++"pref.custom.item.path_mode" = "Path mode";
++"pref.custom.item.unresolved" = "unresolved";
+diff --git c/OpenInTerminal/ru.lproj/Localizable.strings w/OpenInTerminal/ru.lproj/Localizable.strings
+index 45be63b..6673097 100644
+--- c/OpenInTerminal/ru.lproj/Localizable.strings
++++ w/OpenInTerminal/ru.lproj/Localizable.strings
+@@ -37,3 +37,10 @@
+ "pref.general.context_menu_use_submenu" = "Группировать пункты контекстного меню в подменю";
+ 
+ "pref.shortcuts_finder_only" = "Активировать сочетания клавиш только в Finder";
++
++"pref.custom.item.label" = "Label";
++"pref.custom.item.hidden" = "Hide this menu item";
++"pref.custom.item.no_options" = "This item has no configurable options.";
++"pref.custom.item.open_command" = "Open command (open args)";
++"pref.custom.item.path_mode" = "Path mode";
++"pref.custom.item.unresolved" = "unresolved";
+diff --git c/OpenInTerminal/tr.lproj/Localizable.strings w/OpenInTerminal/tr.lproj/Localizable.strings
+index 64399e9..bedbde5 100644
+--- c/OpenInTerminal/tr.lproj/Localizable.strings
++++ w/OpenInTerminal/tr.lproj/Localizable.strings
+@@ -45,3 +45,10 @@
+ "pref.general.context_menu_use_submenu" = "Bağlam menüsü öğelerini bir alt menüde grupla";
+ 
+ "pref.shortcuts_finder_only" = "Kısayolları yalnızca Finder'da etkinleştir";
++
++"pref.custom.item.label" = "Label";
++"pref.custom.item.hidden" = "Hide this menu item";
++"pref.custom.item.no_options" = "This item has no configurable options.";
++"pref.custom.item.open_command" = "Open command (open args)";
++"pref.custom.item.path_mode" = "Path mode";
++"pref.custom.item.unresolved" = "unresolved";
+diff --git c/OpenInTerminal/zh-Hans.lproj/Localizable.strings w/OpenInTerminal/zh-Hans.lproj/Localizable.strings
+index 6ef474e..adda9bf 100644
+--- c/OpenInTerminal/zh-Hans.lproj/Localizable.strings
++++ w/OpenInTerminal/zh-Hans.lproj/Localizable.strings
+@@ -43,3 +43,10 @@
+ "pref.general.context_menu_use_submenu" = "将右键菜单项归入子菜单";
+ 
+ "pref.shortcuts_finder_only" = "仅在访达中激活快捷键";
++
++"pref.custom.item.label" = "标签";
++"pref.custom.item.hidden" = "隐藏此菜单项";
++"pref.custom.item.no_options" = "此项没有可配置的选项。";
++"pref.custom.item.open_command" = "打开命令（open 参数）";
++"pref.custom.item.path_mode" = "路径模式";
++"pref.custom.item.unresolved" = "无法解析";
+diff --git c/OpenInTerminalCore/App.swift w/OpenInTerminalCore/App.swift
+index 3638a8d..9b17eca 100644
+--- c/OpenInTerminalCore/App.swift
++++ w/OpenInTerminalCore/App.swift
+@@ -108,38 +108,58 @@ extension App: Openable {
+     }
+     
+     public func openInSandbox(_ urls: [URL]) throws {
+-        // Build the invocation as a list of discrete arguments — the leading
+-        // program, the app-specific option tokens (trusted config from
+-        // getOpenArguments), then the raw target paths as individual elements.
+-        // The installed AppleScript shell-quotes every element via
+-        // `quoted form of`, so nothing here is manually escaped and a crafted
+-        // file/folder name cannot inject shell commands. This mirrors the
+-        // argument-array approach used by openOutsideSandbox.
++        // resolve the recipe through the catalog (no per-item option context
++        // here — menu items pass their resolved recipe explicitly)
++        try openInSandbox(urls, recipe: DefaultsManager.shared.openRecipe(for: self))
++    }
++
++    /// Opens the urls using an explicit open recipe: argv template + path
++    /// delivery mode + optional named script. Recipe argv tokens are trusted
++    /// config; paths are always passed as discrete elements so a crafted
++    /// file/folder name cannot inject shell commands (the installed
++    /// AppleScript shell-quotes every element via `quoted form of`).
++    public func openInSandbox(_ urls: [URL], recipe: OpenRecipe) throws {
+         var arguments = ["/usr/bin/open"]
+-        arguments.append(contentsOf: DefaultsManager.shared.getOpenArguments(self))
++        arguments.append(contentsOf: recipe.argv)
+ 
+-        switch self.type {
+-        case .terminal:
++        // path delivery per recipe.pathMode
++        switch recipe.pathMode {
++        case .appendFirst:
+             guard var url = urls.first else { return }
+             url.getDirectory()
+             arguments.append(url.path)
+-        case .editor:
++        case .append:
++            arguments.append(contentsOf: urls.map { $0.path })
++        case .placeholder:
+             let paths = urls.map { $0.path }
+-            // fix for neovim: the command template carries a "PATH" placeholder
+-            // token that must be replaced by the actual path arguments.
+-            if SupportedApps.is(self, is: .neovim) {
+-                arguments = arguments.flatMap { $0 == "PATH" ? paths : [$0] }
+-            } else {
+-                arguments.append(contentsOf: paths)
++            arguments = arguments.flatMap { $0 == "{paths}" ? paths : [$0] }
++        case .none:
++            break
++        }
++
++        // named script overrides the general openApp script (e.g. Terminal's
++        // new-tab script). Script recipes receive a `cd <dir>` command as
++        // their single argv element.
++        let scriptName = recipe.script ?? Constants.generalScript
++        var eventArguments = arguments
++        if recipe.script != nil {
++            let dirPath: String
++            switch recipe.pathMode {
++            case .appendFirst, .placeholder:
++                var url = urls.first ?? URL(fileURLWithPath: NSHomeDirectory())
++                url.getDirectory()
++                dirPath = url.path
++            default:
++                dirPath = urls.first?.path ?? NSHomeDirectory()
+             }
++            eventArguments = ["cd \(dirPath.terminalPathEscaped())"]
+         }
+ 
+-        // script
+-        guard let scriptURL = ScriptManager.shared.getScriptURL(with: Constants.generalScript) else { return }
++        guard let scriptURL = ScriptManager.shared.getScriptURL(with: scriptName) else { return }
+         // excute
+         guard FileManager.default.fileExists(atPath: scriptURL.path) else { return }
+         guard let script = try? NSUserAppleScriptTask(url: scriptURL) else { return }
+-        let event = ScriptManager.shared.getScriptEvent(functionName: "openApp", arguments: arguments)
++        let event = ScriptManager.shared.getScriptEvent(functionName: "openApp", arguments: eventArguments)
+         script.execute(withAppleEvent: event) { (appleEvent, error) in
+             if let error = error {
+                 logw("cannot execute applescript: \(error)")
+diff --git c/OpenInTerminalCore/Defaults.swift w/OpenInTerminalCore/Defaults.swift
+index e0b9782..bb515e4 100644
+--- c/OpenInTerminalCore/Defaults.swift
++++ w/OpenInTerminalCore/Defaults.swift
+@@ -53,6 +53,7 @@ public extension DefaultsKeys {
+     static let customMenuApplyToContext = DefaultsKey<Bool>("CustomMenuApplyToContext")
+     static let customMenuIconOption = DefaultsKey<String>("CustomMenuIconOption")
+     static let pathEscapeOption = DefaultsKey<Bool>("PathEscapeOption")
++    static let configMigrated = DefaultsKey<Bool>("ConfigMigrated")
+     static let kittyCommand = DefaultsKey<String>("KittyCommand")
+     static let onlyActivateShortcutsInFinder = DefaultsKey<Bool>("OnlyActivateShortcutsInFinder")
+     static let neovimCommand = DefaultsKey<String>("NeovimCommand")
+diff --git c/OpenInTerminalCore/DefaultsManager.swift w/OpenInTerminalCore/DefaultsManager.swift
+index 46af97e..f4e955c 100644
+--- c/OpenInTerminalCore/DefaultsManager.swift
++++ w/OpenInTerminalCore/DefaultsManager.swift
+@@ -64,25 +64,31 @@ public class DefaultsManager {
+         }
+     }
+     
++    /// config.json is canonical; UserDefaults is the fallback for unmigrated
++    /// or unset values. See ConfigStore.
++    private var store: ConfigStore { ConfigStore.shared }
++
+     public var isHideContextMenuItems: Bool {
+         get {
+-            return Defaults[.hideContextMenuItems]
++            return store.config.menu?.hideContextMenuItems
++                ?? Defaults[.hideContextMenuItems]
+         }
+-        
++
+         set {
+-            Defaults[.hideContextMenuItems] = newValue
++            store.updateMenu { $0.hideContextMenuItems = newValue }
+         }
+     }
+-    
++
+     /// Whether the Finder context menu items are grouped into a submenu.
+     /// This option only applies to the Finder context menu, not the toolbar menu.
+     public var isContextMenuUseSubmenu: Bool {
+         get {
+-            return Defaults[.contextMenuUseSubmenu]
++            return store.config.menu?.useSubmenu
++                ?? Defaults[.contextMenuUseSubmenu]
+         }
+ 
+         set {
+-            Defaults[.contextMenuUseSubmenu] = newValue
++            store.updateMenu { $0.useSubmenu = newValue }
+         }
+     }
+ 
+@@ -91,11 +97,12 @@ public class DefaultsManager {
+     /// the custom app list.
+     public var isContextMenuPinDefaultTerminal: Bool {
+         get {
+-            return Defaults[.contextMenuPinDefaultTerminal]
++            return store.config.menu?.pinDefaultTerminal
++                ?? Defaults[.contextMenuPinDefaultTerminal]
+         }
+ 
+         set {
+-            Defaults[.contextMenuPinDefaultTerminal] = newValue
++            store.updateMenu { $0.pinDefaultTerminal = newValue }
+         }
+     }
+ 
+@@ -111,7 +118,13 @@ public class DefaultsManager {
+     
+     public var defaultTerminal: App? {
+         get {
+-            guard let terminalName = Defaults[.defaultTerminal] else { return nil }
++            // config.json is canonical: ref (catalog id) or display name
++            if let ref = store.config.defaultTerminal,
++               let resolved = AppCatalog.shared.resolve(ref) {
++                return resolved.app
++            }
++            guard let terminalName = store.config.defaultTerminal
++                ?? Defaults[.defaultTerminal] else { return nil }
+             // resolve supported apps case-insensitively so the canonical name and bundleId are used
+             if let supported = SupportedApps.from(name: terminalName) {
+                 return supported.app
+@@ -119,16 +132,22 @@ public class DefaultsManager {
+             let app = App(name: terminalName, type: .terminal)
+             return app
+         }
+-        
++
+         set {
+             guard let newValue = newValue else { return }
+-            Defaults[.defaultTerminal] = newValue.name
++            let id = AppCatalog.shared.resolve(app: newValue)?.id ?? newValue.name
++            store.update { $0.defaultTerminal = id }
+         }
+     }
+-    
++
+     public var defaultEditor: App? {
+         get {
+-            guard let editorName = Defaults[.defaultEditor] else { return nil }
++            if let ref = store.config.defaultEditor,
++               let resolved = AppCatalog.shared.resolve(ref) {
++                return resolved.app
++            }
++            guard let editorName = store.config.defaultEditor
++                ?? Defaults[.defaultEditor] else { return nil }
+             // resolve supported apps case-insensitively so the canonical name and bundleId are used
+             if let supported = SupportedApps.from(name: editorName) {
+                 return supported.app
+@@ -136,10 +155,11 @@ public class DefaultsManager {
+             let app = App(name: editorName, type: .editor)
+             return app
+         }
+-        
++
+         set {
+             guard let newValue = newValue else { return }
+-            Defaults[.defaultEditor] = newValue.name
++            let id = AppCatalog.shared.resolve(app: newValue)?.id ?? newValue.name
++            store.update { $0.defaultEditor = id }
+         }
+     }
+     
+@@ -165,38 +185,61 @@ public class DefaultsManager {
+     
+     // MARK: - Preferences - Custom
+     
++    /// Legacy compat API: reads the `newInstance` option of the first menu
++    /// item resolving to the given app. New code should use per-item options
++    /// via ConfigStore.
+     public func getNewOption(_ app: SupportedApps) -> NewOptionType? {
+-        var option: String?
++        let items = store.config.menu?.items ?? []
++        for (i, item) in items.enumerated() {
++            guard let ref = item.ref,
++                  let cat = AppCatalog.shared.resolve(ref),
++                  cat.name.caseInsensitiveCompare(app.name) == .orderedSame else { continue }
++            let merged = store.itemOptions(at: i)
++            if let v = merged["newInstance"]?.stringValue {
++                return NewOptionType(rawValue: v)
++            }
++        }
++        // legacy fallback
+         switch app {
+         case .iTerm:
+-            option = Defaults[.iTermNewOption]
++            return Defaults[.iTermNewOption].map(NewOptionType.init(rawValue:)) ?? nil
+         default:
+             return nil
+         }
+-        return option.map(NewOptionType.init(rawValue: )) ?? nil
+     }
+-    
++
++    /// Sets the `newInstance` option on every menu item resolving to the
++    /// given app, executing the declared apply side effects (e.g. iTerm's
++    /// OpenFileInNewWindows).
+     public func setNewOption(_ app: SupportedApps, _ newOption: NewOptionType) {
+-        switch app {
+-        case .iTerm:
++        var applied = false
++        let items = store.config.menu?.items ?? []
++        for (i, item) in items.enumerated() {
++            guard let ref = item.ref,
++                  let cat = AppCatalog.shared.resolve(ref),
++                  cat.name.caseInsensitiveCompare(app.name) == .orderedSame,
++                  cat.options?["newInstance"] != nil else { continue }
++            store.setItemOption(at: i, optionId: "newInstance",
++                                value: .string(newOption.rawValue))
++            applied = true
++        }
++        if !applied, case .iTerm = app {
++            // no item present yet — keep the legacy default in sync so the
++            // value is picked up when an iTerm item is later added
+             Defaults[.iTermNewOption] = newOption.rawValue
+-            let option = newOption == .window ? "true" : "false"
+-            let source = """
+-            do shell script "defaults write \(SupportedApps.iTerm.bundleId) OpenFileInNewWindows -bool \(option)"
+-            """
+-            let script = NSAppleScript(source: source)!
+-            var error: NSDictionary?
+-            script.executeAndReturnError(&error)
+-            if error != nil {
+-                logw("Setting iTerm new option failed: \(String(describing: error))")
++            AppCatalog.shared.app(id: "iterm2").flatMap {
++                AppCatalog.shared.applyOption(app: $0, optionId: "newInstance",
++                                              value: .string(newOption.rawValue))
+             }
+-        default:
+-            return
+         }
+     }
+-    
++
++    /// Menu items as legacy `App` list — derived from config.json items.
++    /// Falls back to the plist when config.json has no items (pre-migration).
+     public var customMenuOptions: [App]? {
+         get {
++            let resolved = store.resolvedItems().compactMap { $0.app }
++            if !resolved.isEmpty { return resolved }
+             guard let appsData = Defaults[.customMenuOptions] else { return nil }
+             do {
+                 let apps = try decoder.decode([App].self, from: appsData)
+@@ -205,57 +248,71 @@ public class DefaultsManager {
+                 return nil
+             }
+         }
+-        
++
+         set {
+             guard let newValue = newValue else { return }
+-            do {
+-                let data = try encoder.encode(newValue)
+-                Defaults[.customMenuOptions] = data
+-            } catch {
+-                logw("save custom menu options failed: \(error)")
++            // preserve existing per-item options where the app still matches
++            let existing = store.config.menu?.items ?? []
++            let items: [MenuItemConfig] = newValue.map { app in
++                if let idx = existing.firstIndex(where: {
++                    ($0.ref.flatMap { AppCatalog.shared.resolve($0)?.name } ?? $0.app?.name)
++                        == app.name
++                }) {
++                    return existing[idx]
++                }
++                if let cat = AppCatalog.shared.resolve(app: app) {
++                    return MenuItemConfig(ref: cat.id)
++                }
++                return MenuItemConfig(app: InlineAppDef(name: app.name, type: app.type,
++                                                      bundleId: app.bundleId, open: nil))
+             }
++            store.updateMenu { $0.items = items }
+         }
+     }
+     
+     public var isCustomMenuApplyToToolbar: Bool {
+         get {
+-            return Defaults[.customMenuApplyToToolbar]
++            return store.config.menu?.applyToToolbar
++                ?? Defaults[.customMenuApplyToToolbar]
+         }
+-        
++
+         set {
+-            Defaults[.customMenuApplyToToolbar] = newValue
++            store.updateMenu { $0.applyToToolbar = newValue }
+         }
+     }
+-    
++
+     public var isCustomMenuApplyToContext: Bool {
+         get {
+-            return Defaults[.customMenuApplyToContext]
++            return store.config.menu?.applyToContext
++                ?? Defaults[.customMenuApplyToContext]
+         }
+-        
++
+         set {
+-            Defaults[.customMenuApplyToContext] = newValue
++            store.updateMenu { $0.applyToContext = newValue }
+         }
+     }
+-    
++
+     public var customMenuIconOption: CustomMenuIconOption {
+         get {
+-            let optionValue = Defaults[.customMenuIconOption] ?? "no"
++            let optionValue = store.config.menu?.iconOption
++                ?? Defaults[.customMenuIconOption] ?? "no"
+             let option = CustomMenuIconOption(rawValue: optionValue)
+             return option ?? .no
+         }
+-        
++
+         set {
+-            Defaults[.customMenuIconOption] = newValue.rawValue
++            store.updateMenu { $0.iconOption = newValue.rawValue }
+         }
+     }
+-    
++
+     public var isPathEscaped: Bool {
+         get {
+-            return Defaults[.pathEscapeOption]
++            return store.config.menu?.pathEscaped
++                ?? Defaults[.pathEscapeOption]
+         }
+-        
++
+         set {
+-            Defaults[.pathEscapeOption] = newValue
++            store.updateMenu { $0.pathEscaped = newValue }
+         }
+     }
+ 
+@@ -315,22 +372,54 @@ public class DefaultsManager {
+     }
+     
+ 
+-    public func getOpenCommand(_ app: App, escapeCount: Int = 1) -> String {
+-        if SupportedApps.is(app, is: .alacritty) {
+-            return Constants.Commands.alacritty
+-        } else if SupportedApps.is(app, is: .kitty) {
++    /// The open recipe for an app: user command overrides first (legacy
++    /// KittyCommand/NeovimCommand/GitkrakenCommand prefs), then the catalog
++    /// (bundled + user `apps[]`), then `open -a <name>`.
++    public func openRecipe(for app: App) -> OpenRecipe {
++        if let cmd = legacyCommandOverride(for: app) {
++            var argv = cmd.split(separator: " ").map(String.init)
++            if !argv.isEmpty { argv.removeFirst() }  // drop leading "open"
++            // unify the old PATH placeholder token with the recipe model
++            let hasPlaceholder = argv.contains("PATH")
++            argv = argv.map { $0 == "PATH" ? "{paths}" : $0 }
++            return OpenRecipe(argv: argv,
++                              pathMode: hasPlaceholder ? .placeholder : defaultPathMode(for: app.type))
++        }
++        if let cat = AppCatalog.shared.resolve(app: app) {
++            return cat.open
++        }
++        return OpenRecipe(argv: ["-a", app.name],
++                          pathMode: defaultPathMode(for: app.type))
++    }
++
++    private func defaultPathMode(for type: AppType) -> PathMode {
++        type == .terminal ? .appendFirst : .append
++    }
++
++    /// User-set command defaults that predate the catalog; honored so
++    /// existing overrides keep working (also mirrored into config.json
++    /// `apps[]` by migration).
++    private func legacyCommandOverride(for app: App) -> String? {
++        if SupportedApps.is(app, is: .kitty), Defaults[.kittyCommand] != nil {
+             return kittyCommand
+-        } else if SupportedApps.is(app, is: .wezterm) {
+-            return Constants.Commands.wezterm
+-        } else if SupportedApps.is(app, is: .tabby) {
+-            return Constants.Commands.tabby
+-        } else if SupportedApps.is(app, is: .neovim) {
++        }
++        if SupportedApps.is(app, is: .neovim), Defaults[.neovimCommand] != nil {
+             return neovimCommand
+-        } else if SupportedApps.is(app, is: .gitKraken) {
++        }
++        if SupportedApps.is(app, is: .gitKraken), Defaults[.gitkrakenCommand] != nil {
+             return gitKrakenCommand
+-        } else {
+-            return "open -a \(app.name.nameSpaceEscaped(escapeCount))"
+         }
++        return nil
++    }
++
++    public func getOpenCommand(_ app: App, escapeCount: Int = 1) -> String {
++        // legacy string form — joins recipe tokens; kept for the
++        // deprecated script-generation paths
++        let argv = openRecipe(for: app).argv
++        if escapeCount > 0 {
++            return "open " + argv.map { $0.nameSpaceEscaped(escapeCount) }.joined(separator: " ")
++        }
++        return "open " + argv.joined(separator: " ")
+     }
+ 
+     /// Returns the `open` invocation split into argument tokens, excluding the
+@@ -340,31 +429,7 @@ public class DefaultsManager {
+     /// that they are never interpreted by a shell or by AppleScript. This is the
+     /// injection-safe counterpart to `getOpenCommand`.
+     public func getOpenArguments(_ app: App) -> [String] {
+-        let command: String
+-        if SupportedApps.is(app, is: .alacritty) {
+-            command = Constants.Commands.alacritty
+-        } else if SupportedApps.is(app, is: .kitty) {
+-            command = kittyCommand
+-        } else if SupportedApps.is(app, is: .wezterm) {
+-            command = Constants.Commands.wezterm
+-        } else if SupportedApps.is(app, is: .tabby) {
+-            command = Constants.Commands.tabby
+-        } else if SupportedApps.is(app, is: .neovim) {
+-            command = neovimCommand
+-        } else if SupportedApps.is(app, is: .gitKraken) {
+-            command = gitKrakenCommand
+-        } else {
+-            // Generic case (`open -a <name>`): keep the app name as a single
+-            // argument so names containing spaces are preserved without escaping.
+-            return ["-a", app.name]
+-        }
+-        // The custom command templates above are trusted config with no spaces
+-        // inside individual tokens, so splitting on spaces is safe here.
+-        var tokens = command.split(separator: " ").map(String.init)
+-        if !tokens.isEmpty {
+-            tokens.removeFirst()  // drop leading "open"
+-        }
+-        return tokens
++        return openRecipe(for: app).argv
+     }
+ 
+     // MARK: - Advanced Settings
+diff --git c/OpenInTerminalCore/ScriptManager.swift w/OpenInTerminalCore/ScriptManager.swift
+index 4e068ae..78d913f 100644
+--- c/OpenInTerminalCore/ScriptManager.swift
++++ w/OpenInTerminalCore/ScriptManager.swift
+@@ -47,7 +47,8 @@ public class ScriptManager {
+     /// Open path in a new tab of Terminal
+     public func getTerminalNewTabAppleScript() -> String {
+         let script = """
+-        on openApp(command)
++        on openApp(argv)
++            set command to item 1 of argv
+             if not application "Terminal" is running then
+                 tell application "Terminal"
+                     do script command
+diff --git c/OpenInTerminalFinderExtension/FinderSync.swift w/OpenInTerminalFinderExtension/FinderSync.swift
+index 8a821aa..5e38f18 100644
+--- c/OpenInTerminalFinderExtension/FinderSync.swift
++++ w/OpenInTerminalFinderExtension/FinderSync.swift
+@@ -47,7 +47,7 @@ class FinderSync: FIFinderSync {
+ 
+         let dm = DefaultsManager.shared
+         OITLog.menu.info("menu kind=\(menuKind.rawValue) bundle=\(Bundle.main.bundleIdentifier ?? "nil", privacy: .public) suiteKeys=\(Defaults.dictionaryRepresentation().count) hideCtx=\(dm.isHideContextMenuItems) submenu=\(dm.isContextMenuUseSubmenu) pin=\(dm.isContextMenuPinDefaultTerminal) customCtx=\(dm.isCustomMenuApplyToContext) customTb=\(dm.isCustomMenuApplyToToolbar)")
+-        OITLog.menu.info("defTerm=\(dm.defaultTerminal?.name ?? "nil", privacy: .public) defEditor=\(dm.defaultEditor?.name ?? "nil", privacy: .public) customApps=\(dm.customMenuOptions?.count ?? -1)")
++        OITLog.menu.info("defTerm=\(dm.defaultTerminal?.name ?? "nil", privacy: .public) defEditor=\(dm.defaultEditor?.name ?? "nil", privacy: .public) customApps=\(dm.customMenuOptions?.count ?? -1) items=\(ConfigStore.shared.resolvedItems().count) configIssues=\(ConfigStore.shared.issues.count)")
+ 
+         switch menuKind {
+ 
+@@ -178,8 +178,25 @@ class FinderSync: FIFinderSync {
+     func createCustomMenu(useSubmenu: Bool) -> NSMenu {
+         let menu = NSMenu(title: "")
+ 
+-        // get saved custom apps
+-        guard let customApps = DefaultsManager.shared.customMenuOptions else {
++        // resolved menu items from config.json (catalog refs, inline custom
++        // apps, and built-in action items, in configured order); when the
++        // config has no items, fall back to legacy CustomMenuOptions so an
++        // unmigrated or deleted config.json never produces an empty menu
++        var resolved = ConfigStore.shared.resolvedItems().filter { !$0.hidden }
++        if resolved.isEmpty, let legacy = DefaultsManager.shared.customMenuOptions {
++            resolved = legacy.map { app in
++                let cat = AppCatalog.shared.resolve(app: app)
++                return ResolvedMenuItem(
++                    content: cat.map { .catalogApp($0) } ?? .customApp(app, nil),
++                    title: app.name,
++                    options: [:],
++                    hidden: false,
++                    source: MenuItemConfig(ref: cat?.id,
++                                           app: cat == nil ? InlineAppDef(name: app.name, type: app.type, bundleId: app.bundleId, open: nil) : nil))
++            }
++        }
++        guard !resolved.isEmpty,
++              resolved.contains(where: { $0.app != nil }) else {
+             return menu
+         }
+ 
+@@ -195,18 +212,27 @@ class FinderSync: FIFinderSync {
+             menu.addItem(.separator())
+         }
+ 
+-        customApps.forEach { app in
+-            let itemTitle = app.name
+-            let menuItem = NSMenuItem(title: itemTitle,
+-                                      action: #selector(customMenuItemClicked),
+-                                      keyEquivalent: "")
+-            let appIcon = DefaultsManager.shared.getAppIcon(app)
+-            menuItem.image = appIcon
+-            itemsMenu.addItem(menuItem)
++        var hasCopyPath = false
++        for (index, item) in resolved.enumerated() {
++            switch item.content {
++            case .action(.copyPath):
++                hasCopyPath = true
++                itemsMenu.addItem(self.copyPathItem)
++            case .catalogApp, .customApp:
++                guard let app = item.app else { continue }
++                let menuItem = NSMenuItem(title: item.title,
++                                          action: #selector(customMenuItemClicked),
++                                          keyEquivalent: "")
++                menuItem.image = DefaultsManager.shared.getAppIcon(app)
++                menuItem.representedObject = index
++                itemsMenu.addItem(menuItem)
++            }
+         }
+ 
+-        // add "Copy Path"
+-        itemsMenu.addItem(self.copyPathItem)
++        // keep "Copy Path" appended unless the config placed it explicitly
++        if !hasCopyPath {
++            itemsMenu.addItem(self.copyPathItem)
++        }
+ 
+         // attach the items menu under a single top level item when needed
+         if useSubmenu {
+@@ -238,6 +264,19 @@ class FinderSync: FIFinderSync {
+             logw("Failed to open \(app.name) with \(urls)")
+         }
+     }
++
++    /// Opens a resolved menu item: uses the item's effective open recipe
++    /// (per-item options may select a variant, e.g. Terminal's tab script).
++    func open(_ item: ResolvedMenuItem) {
++        guard let app = item.app else { return }
++        let urls = getSelectedPathsFromFinder()
++        do {
++            try app.openInSandbox(urls, recipe: item.openRecipe)
++            OITLog.action.info("open '\(item.title, privacy: .public)' recipe argv=\(item.openRecipe.argv.joined(separator: " "), privacy: .public) script=\(item.openRecipe.script ?? "general", privacy: .public)")
++        } catch {
++            OITLog.action.error("open '\(item.title, privacy: .public)' failed: \(error.localizedDescription, privacy: .public)")
++        }
++    }
+     
+ //    func openTerminal(_ terminal: TerminalType) {
+ //        var scriptPath: URL
+@@ -294,14 +333,10 @@ class FinderSync: FIFinderSync {
+     }
+     
+     @objc func customMenuItemClicked(_ sender: NSMenuItem) {
+-        guard let customApps = DefaultsManager.shared.customMenuOptions else { return }
+-        let appName = sender.title
+-        for app in customApps {
+-            if app.name == appName {
+-                open(app)
+-                break
+-            }
+-        }
++        let resolved = ConfigStore.shared.resolvedItems().filter { !$0.hidden }
++        guard let index = sender.representedObject as? Int,
++              resolved.indices.contains(index) else { return }
++        open(resolved[index])
+     }
+     
+     @objc func copyPathToClipboard() {

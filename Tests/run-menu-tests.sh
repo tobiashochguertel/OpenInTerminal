@@ -38,4 +38,9 @@ swiftc \
   -O
 
 echo "==> Running tests"
+# OIT_CONFIG_PATH: test-local config.json (canonical config source)
+# OIT_CATALOG_PATH: the repo's bundled catalog (no framework bundle here)
+export OIT_CONFIG_PATH="$OUT/test-config.json"
+export OIT_CATALOG_PATH="$PWD/OpenInTerminalCore/Resources/AppCatalog.json"
+rm -f "$OUT/test-config.json"
 DYLD_LIBRARY_PATH="$OUT" "$OUT/menutest"

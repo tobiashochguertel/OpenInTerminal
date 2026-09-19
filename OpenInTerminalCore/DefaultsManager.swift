@@ -64,25 +64,31 @@ public class DefaultsManager {
         }
     }
     
+    /// config.json is canonical; UserDefaults is the fallback for unmigrated
+    /// or unset values. See ConfigStore.
+    private var store: ConfigStore { ConfigStore.shared }
+
     public var isHideContextMenuItems: Bool {
         get {
-            return Defaults[.hideContextMenuItems]
+            return store.config.menu?.hideContextMenuItems
+                ?? Defaults[.hideContextMenuItems]
         }
-        
+
         set {
-            Defaults[.hideContextMenuItems] = newValue
+            store.updateMenu { $0.hideContextMenuItems = newValue }
         }
     }
-    
+
     /// Whether the Finder context menu items are grouped into a submenu.
     /// This option only applies to the Finder context menu, not the toolbar menu.
     public var isContextMenuUseSubmenu: Bool {
         get {
-            return Defaults[.contextMenuUseSubmenu]
+            return store.config.menu?.useSubmenu
+                ?? Defaults[.contextMenuUseSubmenu]
         }
 
         set {
-            Defaults[.contextMenuUseSubmenu] = newValue
+            store.updateMenu { $0.useSubmenu = newValue }
         }
     }
 
@@ -91,11 +97,12 @@ public class DefaultsManager {
     /// the custom app list.
     public var isContextMenuPinDefaultTerminal: Bool {
         get {
-            return Defaults[.contextMenuPinDefaultTerminal]
+            return store.config.menu?.pinDefaultTerminal
+                ?? Defaults[.contextMenuPinDefaultTerminal]
         }
 
         set {
-            Defaults[.contextMenuPinDefaultTerminal] = newValue
+            store.updateMenu { $0.pinDefaultTerminal = newValue }
         }
     }
 
@@ -111,7 +118,13 @@ public class DefaultsManager {
     
     public var defaultTerminal: App? {
         get {
-            guard let terminalName = Defaults[.defaultTerminal] else { return nil }
+            // config.json is canonical: ref (catalog id) or display name
+            if let ref = store.config.defaultTerminal,
+               let resolved = AppCatalog.shared.resolve(ref) {
+                return resolved.app
+            }
+            guard let terminalName = store.config.defaultTerminal
+                ?? Defaults[.defaultTerminal] else { return nil }
             // resolve supported apps case-insensitively so the canonical name and bundleId are used
             if let supported = SupportedApps.from(name: terminalName) {
                 return supported.app
@@ -119,16 +132,22 @@ public class DefaultsManager {
             let app = App(name: terminalName, type: .terminal)
             return app
         }
-        
+
         set {
             guard let newValue = newValue else { return }
-            Defaults[.defaultTerminal] = newValue.name
+            let id = AppCatalog.shared.resolve(app: newValue)?.id ?? newValue.name
+            store.update { $0.defaultTerminal = id }
         }
     }
-    
+
     public var defaultEditor: App? {
         get {
-            guard let editorName = Defaults[.defaultEditor] else { return nil }
+            if let ref = store.config.defaultEditor,
+               let resolved = AppCatalog.shared.resolve(ref) {
+                return resolved.app
+            }
+            guard let editorName = store.config.defaultEditor
+                ?? Defaults[.defaultEditor] else { return nil }
             // resolve supported apps case-insensitively so the canonical name and bundleId are used
             if let supported = SupportedApps.from(name: editorName) {
                 return supported.app
@@ -136,10 +155,11 @@ public class DefaultsManager {
             let app = App(name: editorName, type: .editor)
             return app
         }
-        
+
         set {
             guard let newValue = newValue else { return }
-            Defaults[.defaultEditor] = newValue.name
+            let id = AppCatalog.shared.resolve(app: newValue)?.id ?? newValue.name
+            store.update { $0.defaultEditor = id }
         }
     }
     
@@ -165,38 +185,61 @@ public class DefaultsManager {
     
     // MARK: - Preferences - Custom
     
+    /// Legacy compat API: reads the `newInstance` option of the first menu
+    /// item resolving to the given app. New code should use per-item options
+    /// via ConfigStore.
     public func getNewOption(_ app: SupportedApps) -> NewOptionType? {
-        var option: String?
+        let items = store.config.menu?.items ?? []
+        for (i, item) in items.enumerated() {
+            guard let ref = item.ref,
+                  let cat = AppCatalog.shared.resolve(ref),
+                  cat.name.caseInsensitiveCompare(app.name) == .orderedSame else { continue }
+            let merged = store.itemOptions(at: i)
+            if let v = merged["newInstance"]?.stringValue {
+                return NewOptionType(rawValue: v)
+            }
+        }
+        // legacy fallback
         switch app {
         case .iTerm:
-            option = Defaults[.iTermNewOption]
+            return Defaults[.iTermNewOption].map(NewOptionType.init(rawValue:)) ?? nil
         default:
             return nil
         }
-        return option.map(NewOptionType.init(rawValue: )) ?? nil
     }
-    
+
+    /// Sets the `newInstance` option on every menu item resolving to the
+    /// given app, executing the declared apply side effects (e.g. iTerm's
+    /// OpenFileInNewWindows).
     public func setNewOption(_ app: SupportedApps, _ newOption: NewOptionType) {
-        switch app {
-        case .iTerm:
+        var applied = false
+        let items = store.config.menu?.items ?? []
+        for (i, item) in items.enumerated() {
+            guard let ref = item.ref,
+                  let cat = AppCatalog.shared.resolve(ref),
+                  cat.name.caseInsensitiveCompare(app.name) == .orderedSame,
+                  cat.options?["newInstance"] != nil else { continue }
+            store.setItemOption(at: i, optionId: "newInstance",
+                                value: .string(newOption.rawValue))
+            applied = true
+        }
+        if !applied, case .iTerm = app {
+            // no item present yet — keep the legacy default in sync so the
+            // value is picked up when an iTerm item is later added
             Defaults[.iTermNewOption] = newOption.rawValue
-            let option = newOption == .window ? "true" : "false"
-            let source = """
-            do shell script "defaults write \(SupportedApps.iTerm.bundleId) OpenFileInNewWindows -bool \(option)"
-            """
-            let script = NSAppleScript(source: source)!
-            var error: NSDictionary?
-            script.executeAndReturnError(&error)
-            if error != nil {
-                logw("Setting iTerm new option failed: \(String(describing: error))")
+            AppCatalog.shared.app(id: "iterm2").flatMap {
+                AppCatalog.shared.applyOption(app: $0, optionId: "newInstance",
+                                              value: .string(newOption.rawValue))
             }
-        default:
-            return
         }
     }
-    
+
+    /// Menu items as legacy `App` list — derived from config.json items.
+    /// Falls back to the plist when config.json has no items (pre-migration).
     public var customMenuOptions: [App]? {
         get {
+            let resolved = store.resolvedItems().compactMap { $0.app }
+            if !resolved.isEmpty { return resolved }
             guard let appsData = Defaults[.customMenuOptions] else { return nil }
             do {
                 let apps = try decoder.decode([App].self, from: appsData)
@@ -205,57 +248,71 @@ public class DefaultsManager {
                 return nil
             }
         }
-        
+
         set {
             guard let newValue = newValue else { return }
-            do {
-                let data = try encoder.encode(newValue)
-                Defaults[.customMenuOptions] = data
-            } catch {
-                logw("save custom menu options failed: \(error)")
+            // preserve existing per-item options where the app still matches
+            let existing = store.config.menu?.items ?? []
+            let items: [MenuItemConfig] = newValue.map { app in
+                if let idx = existing.firstIndex(where: {
+                    ($0.ref.flatMap { AppCatalog.shared.resolve($0)?.name } ?? $0.app?.name)
+                        == app.name
+                }) {
+                    return existing[idx]
+                }
+                if let cat = AppCatalog.shared.resolve(app: app) {
+                    return MenuItemConfig(ref: cat.id)
+                }
+                return MenuItemConfig(app: InlineAppDef(name: app.name, type: app.type,
+                                                      bundleId: app.bundleId, open: nil))
             }
+            store.updateMenu { $0.items = items }
         }
     }
     
     public var isCustomMenuApplyToToolbar: Bool {
         get {
-            return Defaults[.customMenuApplyToToolbar]
+            return store.config.menu?.applyToToolbar
+                ?? Defaults[.customMenuApplyToToolbar]
         }
-        
+
         set {
-            Defaults[.customMenuApplyToToolbar] = newValue
+            store.updateMenu { $0.applyToToolbar = newValue }
         }
     }
-    
+
     public var isCustomMenuApplyToContext: Bool {
         get {
-            return Defaults[.customMenuApplyToContext]
+            return store.config.menu?.applyToContext
+                ?? Defaults[.customMenuApplyToContext]
         }
-        
+
         set {
-            Defaults[.customMenuApplyToContext] = newValue
+            store.updateMenu { $0.applyToContext = newValue }
         }
     }
-    
+
     public var customMenuIconOption: CustomMenuIconOption {
         get {
-            let optionValue = Defaults[.customMenuIconOption] ?? "no"
+            let optionValue = store.config.menu?.iconOption
+                ?? Defaults[.customMenuIconOption] ?? "no"
             let option = CustomMenuIconOption(rawValue: optionValue)
             return option ?? .no
         }
-        
+
         set {
-            Defaults[.customMenuIconOption] = newValue.rawValue
+            store.updateMenu { $0.iconOption = newValue.rawValue }
         }
     }
-    
+
     public var isPathEscaped: Bool {
         get {
-            return Defaults[.pathEscapeOption]
+            return store.config.menu?.pathEscaped
+                ?? Defaults[.pathEscapeOption]
         }
-        
+
         set {
-            Defaults[.pathEscapeOption] = newValue
+            store.updateMenu { $0.pathEscaped = newValue }
         }
     }
 
@@ -315,22 +372,54 @@ public class DefaultsManager {
     }
     
 
-    public func getOpenCommand(_ app: App, escapeCount: Int = 1) -> String {
-        if SupportedApps.is(app, is: .alacritty) {
-            return Constants.Commands.alacritty
-        } else if SupportedApps.is(app, is: .kitty) {
-            return kittyCommand
-        } else if SupportedApps.is(app, is: .wezterm) {
-            return Constants.Commands.wezterm
-        } else if SupportedApps.is(app, is: .tabby) {
-            return Constants.Commands.tabby
-        } else if SupportedApps.is(app, is: .neovim) {
-            return neovimCommand
-        } else if SupportedApps.is(app, is: .gitKraken) {
-            return gitKrakenCommand
-        } else {
-            return "open -a \(app.name.nameSpaceEscaped(escapeCount))"
+    /// The open recipe for an app: user command overrides first (legacy
+    /// KittyCommand/NeovimCommand/GitkrakenCommand prefs), then the catalog
+    /// (bundled + user `apps[]`), then `open -a <name>`.
+    public func openRecipe(for app: App) -> OpenRecipe {
+        if let cmd = legacyCommandOverride(for: app) {
+            var argv = cmd.split(separator: " ").map(String.init)
+            if !argv.isEmpty { argv.removeFirst() }  // drop leading "open"
+            // unify the old PATH placeholder token with the recipe model
+            let hasPlaceholder = argv.contains("PATH")
+            argv = argv.map { $0 == "PATH" ? "{paths}" : $0 }
+            return OpenRecipe(argv: argv,
+                              pathMode: hasPlaceholder ? .placeholder : defaultPathMode(for: app.type))
         }
+        if let cat = AppCatalog.shared.resolve(app: app) {
+            return cat.open
+        }
+        return OpenRecipe(argv: ["-a", app.name],
+                          pathMode: defaultPathMode(for: app.type))
+    }
+
+    private func defaultPathMode(for type: AppType) -> PathMode {
+        type == .terminal ? .appendFirst : .append
+    }
+
+    /// User-set command defaults that predate the catalog; honored so
+    /// existing overrides keep working (also mirrored into config.json
+    /// `apps[]` by migration).
+    private func legacyCommandOverride(for app: App) -> String? {
+        if SupportedApps.is(app, is: .kitty), Defaults[.kittyCommand] != nil {
+            return kittyCommand
+        }
+        if SupportedApps.is(app, is: .neovim), Defaults[.neovimCommand] != nil {
+            return neovimCommand
+        }
+        if SupportedApps.is(app, is: .gitKraken), Defaults[.gitkrakenCommand] != nil {
+            return gitKrakenCommand
+        }
+        return nil
+    }
+
+    public func getOpenCommand(_ app: App, escapeCount: Int = 1) -> String {
+        // legacy string form — joins recipe tokens; kept for the
+        // deprecated script-generation paths
+        let argv = openRecipe(for: app).argv
+        if escapeCount > 0 {
+            return "open " + argv.map { $0.nameSpaceEscaped(escapeCount) }.joined(separator: " ")
+        }
+        return "open " + argv.joined(separator: " ")
     }
 
     /// Returns the `open` invocation split into argument tokens, excluding the
@@ -340,31 +429,7 @@ public class DefaultsManager {
     /// that they are never interpreted by a shell or by AppleScript. This is the
     /// injection-safe counterpart to `getOpenCommand`.
     public func getOpenArguments(_ app: App) -> [String] {
-        let command: String
-        if SupportedApps.is(app, is: .alacritty) {
-            command = Constants.Commands.alacritty
-        } else if SupportedApps.is(app, is: .kitty) {
-            command = kittyCommand
-        } else if SupportedApps.is(app, is: .wezterm) {
-            command = Constants.Commands.wezterm
-        } else if SupportedApps.is(app, is: .tabby) {
-            command = Constants.Commands.tabby
-        } else if SupportedApps.is(app, is: .neovim) {
-            command = neovimCommand
-        } else if SupportedApps.is(app, is: .gitKraken) {
-            command = gitKrakenCommand
-        } else {
-            // Generic case (`open -a <name>`): keep the app name as a single
-            // argument so names containing spaces are preserved without escaping.
-            return ["-a", app.name]
-        }
-        // The custom command templates above are trusted config with no spaces
-        // inside individual tokens, so splitting on spaces is safe here.
-        var tokens = command.split(separator: " ").map(String.init)
-        if !tokens.isEmpty {
-            tokens.removeFirst()  // drop leading "open"
-        }
-        return tokens
+        return openRecipe(for: app).argv
     }
 
     // MARK: - Advanced Settings

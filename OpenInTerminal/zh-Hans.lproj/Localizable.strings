@@ -43,3 +43,10 @@
 "pref.general.context_menu_use_submenu" = "将右键菜单项归入子菜单";
 
 "pref.shortcuts_finder_only" = "仅在访达中激活快捷键";
+
+"pref.custom.item.label" = "标签";
+"pref.custom.item.hidden" = "隐藏此菜单项";
+"pref.custom.item.no_options" = "此项没有可配置的选项。";
+"pref.custom.item.open_command" = "打开命令（open 参数）";
+"pref.custom.item.path_mode" = "路径模式";
+"pref.custom.item.unresolved" = "无法解析";

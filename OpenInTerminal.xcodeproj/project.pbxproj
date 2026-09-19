@@ -14,6 +14,9 @@
 		4725254122680F5A003C50DF /* Finder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4725253F22680F5A003C50DF /* Finder.swift */; };
 		4725254422680F7C003C50DF /* Log.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4725254222680F7C003C50DF /* Log.swift */; };
 		0AC0FFEE0AC0FFEE0AC00001 /* OITLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AC0FFEE0AC0FFEE0AC00002 /* OITLog.swift */; };
+		0AC0FFEE0AC0FFEE0AC00003 /* Catalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AC0FFEE0AC0FFEE0AC00004 /* Catalog.swift */; };
+		0AC0FFEE0AC0FFEE0AC00005 /* ConfigStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0AC0FFEE0AC0FFEE0AC00006 /* ConfigStore.swift */; };
+		0AC0FFEE0AC0FFEE0AC00007 /* AppCatalog.json in Resources */ = {isa = PBXBuildFile; fileRef = 0AC0FFEE0AC0FFEE0AC00008 /* AppCatalog.json */; };
 		472525592268100F003C50DF /* FinderAssets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 472525572268100F003C50DF /* FinderAssets.xcassets */; };
 		4725255A2268100F003C50DF /* FinderSync.swift in Sources */ = {isa = PBXBuildFile; fileRef = 472525582268100F003C50DF /* FinderSync.swift */; };
 		4725256222681098003C50DF /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4725256122681098003C50DF /* AppDelegate.swift */; };
@@ -153,6 +156,9 @@
 		4725253F22680F5A003C50DF /* Finder.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Finder.swift; sourceTree = "<group>"; };
 		4725254222680F7C003C50DF /* Log.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Log.swift; sourceTree = "<group>"; };
 		0AC0FFEE0AC0FFEE0AC00002 /* OITLog.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OITLog.swift; sourceTree = "<group>"; };
+		0AC0FFEE0AC0FFEE0AC00004 /* Catalog.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Catalog.swift; sourceTree = "<group>"; };
+		0AC0FFEE0AC0FFEE0AC00006 /* ConfigStore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConfigStore.swift; sourceTree = "<group>"; };
+		0AC0FFEE0AC0FFEE0AC00008 /* AppCatalog.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = AppCatalog.json; sourceTree = "<group>"; };
 		4725254322680F7C003C50DF /* Error.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Error.swift; sourceTree = "<group>"; };
 		4725254A22680FEB003C50DF /* OpenInTerminalFinderExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = OpenInTerminalFinderExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		4725254E22680FEB003C50DF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -254,6 +260,9 @@
 				95CE2788257F2F3A0053D76A /* Error.swift */,
 				4725254222680F7C003C50DF /* Log.swift */,
 				0AC0FFEE0AC0FFEE0AC00002 /* OITLog.swift */,
+				0AC0FFEE0AC0FFEE0AC00004 /* Catalog.swift */,
+				0AC0FFEE0AC0FFEE0AC00006 /* ConfigStore.swift */,
+				0AC0FFEE0AC0FFEE0AC00009 /* Resources */,
 				4725253422680EFD003C50DF /* FinderManager.swift */,
 				95C7C2ED257B7D63004C8355 /* App.swift */,
 				9592D636258CB9210031CA30 /* AppManager.swift */,
@@ -274,6 +283,14 @@
 				4725253E22680F5A003C50DF /* Terminal.swift */,
 			);
 			path = ScriptingBridge;
+			sourceTree = "<group>";
+		};
+		0AC0FFEE0AC0FFEE0AC00009 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				0AC0FFEE0AC0FFEE0AC00008 /* AppCatalog.json */,
+			);
+			path = Resources;
 			sourceTree = "<group>";
 		};
 		4725254B22680FEB003C50DF /* OpenInTerminalFinderExtension */ = {
@@ -568,6 +585,7 @@
 				95294D0825B3E17900CC995D /* Icons.xcassets in Resources */,
 				95C6C340227AA1CB00F157C4 /* Localizable.strings in Resources */,
 				9509DBDF300269CC00AE88FA /* AppIcon.icon in Resources */,
+				0AC0FFEE0AC0FFEE0AC00007 /* AppCatalog.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -617,6 +635,8 @@
 				95CE277E257E470F0053D76A /* ScriptManager.swift in Sources */,
 				4725254422680F7C003C50DF /* Log.swift in Sources */,
 				0AC0FFEE0AC0FFEE0AC00001 /* OITLog.swift in Sources */,
+				0AC0FFEE0AC0FFEE0AC00003 /* Catalog.swift in Sources */,
+				0AC0FFEE0AC0FFEE0AC00005 /* ConfigStore.swift in Sources */,
 				4725253522680EFD003C50DF /* FinderManager.swift in Sources */,
 				95C7C2EE257B7D63004C8355 /* App.swift in Sources */,
 				9584EAB82CF06A500080F94F /* PathExtensions.swift in Sources */,

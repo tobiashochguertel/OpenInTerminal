@@ -45,3 +45,10 @@
 "pref.general.context_menu_use_submenu" = "컨텍스트 메뉴 항목을 하위 메뉴로 그룹화";
 
 "pref.shortcuts_finder_only" = "Finder에서만 단축키 활성화";
+
+"pref.custom.item.label" = "Label";
+"pref.custom.item.hidden" = "Hide this menu item";
+"pref.custom.item.no_options" = "This item has no configurable options.";
+"pref.custom.item.open_command" = "Open command (open args)";
+"pref.custom.item.path_mode" = "Path mode";
+"pref.custom.item.unresolved" = "unresolved";
